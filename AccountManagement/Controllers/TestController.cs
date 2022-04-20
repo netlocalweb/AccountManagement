@@ -9,11 +9,13 @@ namespace AccountManagement.Controllers
     {
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
+        private readonly IDapperRepository _dapperRepository;
 
-        public TestController(IRepositoryManager repository, ILoggerManager logger)
+        public TestController(IRepositoryManager repository, ILoggerManager logger, IDapperRepository dapperRepository)
         {
             _repository = repository;
             _logger = logger;
+            _dapperRepository = dapperRepository;
         }
 
         /// <summary>
@@ -42,6 +44,23 @@ namespace AccountManagement.Controllers
             _logger.LogInfo("test method is called");
 
             return Ok(testStr);
+        }
+
+        [HttpGet("dapper-get-all")]
+        public IActionResult DapperGetAll()
+        {
+            var result = _dapperRepository.GetAll();
+            return Ok(result);
+        }
+
+        [HttpGet("dapper-get-by-id/{id}")]
+        public IActionResult DapperGetById(int id)
+        {
+            var result = _dapperRepository.GetById(id);
+            if (result == null)
+                return NotFound($"Entity with id {id} not found");
+
+            return Ok(result);
         }
     }
 }

@@ -31,7 +31,9 @@ namespace AccountManagement
             services.ConfigureIISIntegration();
             services.ConfigureLoggerService();
             services.ConfigureSqlContext(Configuration);
+            services.ConfigureDapperContext();
             services.ConfigureRepositoryManager();
+            services.ConfigureDapperRepository();
             services.AddAutoMapper(typeof(Startup));
             services.AddHttpContextAccessor();
 
