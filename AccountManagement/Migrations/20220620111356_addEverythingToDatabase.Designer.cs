@@ -4,14 +4,16 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AccountManagement.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20220620111356_addEverythingToDatabase")]
+    partial class addEverythingToDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,8 +141,8 @@ namespace AccountManagement.Migrations
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("LongDescription")
                         .HasColumnType("nvarchar(max)");
@@ -161,8 +163,7 @@ namespace AccountManagement.Migrations
                     b.ToTable("Products");
                 });
 
-            
-            modelBuilder.Entity("Entities.Models.Product", b =>
+           modelBuilder.Entity("Entities.Models.Product", b =>
                 {
                     b.HasOne("Entities.Models.Category", "Category")
                         .WithMany()

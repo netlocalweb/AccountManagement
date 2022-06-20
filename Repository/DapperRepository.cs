@@ -14,25 +14,36 @@ namespace Repository
         {
             _context = context;
         }
-
-        public IEnumerable<TestEntity> GetAll()
+        
+        public IEnumerable<Clients> GetAll()
         {
             var query = "SELECT * FROM Test";
             using (var connection = _context.CreateConnection())
             {
-                var result = connection.Query<TestEntity>(query);
+                var result = connection.Query<Clients>(query);
                 return result;
             }
         }
 
-        public TestEntity GetById(int id)
+        public Clients GetById(int id)
         {
             var query = "SELECT * FROM Test WHERE Id = @Id";
             using (var connection = _context.CreateConnection())
             {
-                var result = connection.QuerySingleOrDefault<TestEntity>(query, new { id });
+                var result = connection.QuerySingleOrDefault<Clients>(query, new { id });
                 return result;
             }
         }
+
+        public IEnumerable<Clients> GetAllClients()
+        {
+            var query = "SELECT * FROM Clients";
+            using (var connection = _context.CreateConnection())
+            {
+                var result = connection.Query<Clients>(query);
+                return result;
+            }
+        }
+        
     }
 }

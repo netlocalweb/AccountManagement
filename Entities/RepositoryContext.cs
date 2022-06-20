@@ -15,7 +15,14 @@ namespace Entities
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<TestEntity> Test { get; set; }
-        
+               
+        public DbSet<Clients> Clients { get; set; }
+
+        public DbSet<Currency> Currencies { get; set; }
+
+        public DbSet<Category> Categories { get; set; }
+
+        public DbSet<Product> Products { get; set; }
+       
     }
 }

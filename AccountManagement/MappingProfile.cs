@@ -8,7 +8,7 @@ namespace AccountManagement
     {
         public MappingProfile()
         {
-            CreateMap<TestEntityDTO, TestEntity>();
+            CreateMap<CreateClientDTO, Clients>();
         }
     }
 }

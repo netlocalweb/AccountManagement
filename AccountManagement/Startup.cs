@@ -2,10 +2,12 @@ using AccountManagement.Extensions;
 using AspNetCoreRateLimit;
 using AutoMapper;
 using Contracts;
+using Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,6 +38,17 @@ namespace AccountManagement
             services.ConfigureDapperRepository();
             services.AddAutoMapper(typeof(Startup));
             services.AddHttpContextAccessor();
+
+            services.AddDbContext<RepositoryContext>(options =>
+            options.UseSqlServer(
+                Configuration.GetConnectionString("sqlConnection")));
+
+            services.AddSwaggerGen(s => s.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            {
+                Title = "MyAPI",
+                Version = "V1", 
+                Description = "Des1"
+            }));
 
             services.AddAuthentication();
 

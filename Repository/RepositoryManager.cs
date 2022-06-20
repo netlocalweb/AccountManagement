@@ -6,22 +6,64 @@ namespace Repository
     public class RepositoryManager : IRepositoryManager
     {
         private RepositoryContext _repositoryContext;
-        private ITestRepository _testRepository;
+        private IClientsRepository _clientsRepository;
+        private ICurrencyRepository _currencyRepository;
+        private ICategoryRepository _categoryRepository;
+        private IProductRepository _productRepository;
+       
+        
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
             _repositoryContext = repositoryContext;
         }
 
-        public ITestRepository TestRepository
+        
+        public IClientsRepository ClientsRepository
         {
             get
             {
-                if (_testRepository == null)
-                    _testRepository = new TestRepository(_repositoryContext);
+                if (_clientsRepository == null)
+                    _clientsRepository = new ClientsRepository(_repositoryContext);
 
-                return _testRepository;
+                return _clientsRepository;
             }
         }
+
+        public ICurrencyRepository CurrencyRepository
+        {
+            get
+            {
+                if (_currencyRepository == null)
+                    _currencyRepository = new CurrencyRepository(_repositoryContext);
+
+                return _currencyRepository;
+            }
+        }
+
+        public ICategoryRepository CategoryRepository
+        {
+            get
+            {
+                if (_categoryRepository == null)
+                    _categoryRepository = new CategoryRepository(_repositoryContext);
+
+                return _categoryRepository;
+            }
+        }
+
+        public IProductRepository ProductRepository
+        {
+            get
+            {
+                if (_productRepository == null)
+                    _productRepository = new ProductRepository(_repositoryContext);
+
+                return _productRepository;
+            }
+        }
+
+
+
     }
 }

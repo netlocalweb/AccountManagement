@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IDapperRepository
     {
-        IEnumerable<TestEntity> GetAll();
-        TestEntity GetById(int id);
+        IEnumerable<Clients> GetAll();
+        Clients GetById(int id);
     }
 }

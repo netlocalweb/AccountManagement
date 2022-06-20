@@ -2,6 +2,14 @@
 {
     public interface IRepositoryManager
     {
-        ITestRepository TestRepository { get; }
+        IClientsRepository ClientsRepository { get; }  
+
+        ICurrencyRepository CurrencyRepository { get; }
+
+        ICategoryRepository CategoryRepository { get; }
+
+        IProductRepository ProductRepository { get; }
+
+       
     }
 }

@@ -43,7 +43,7 @@ namespace AccountManagement.Extensions
 
         public static void ConfigureRepositoryManager(this IServiceCollection services) =>
            services.AddScoped<IRepositoryManager, RepositoryManager>();
-
+        
         public static void ConfigureDapperRepository(this IServiceCollection services) =>
             services.AddScoped<IDapperRepository, DapperRepository>();
 
@@ -51,12 +51,7 @@ namespace AccountManagement.Extensions
         {
             services.AddSwaggerGen(s =>
             {
-                s.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Account Management API",
-                    Version = "v1",
-                    Description = "AccountManagement API by LocalWeb",
-                });
+                
 
                 s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
