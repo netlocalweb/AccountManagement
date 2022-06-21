@@ -10,6 +10,8 @@
 
         IProductRepository ProductRepository { get; }
 
+        IBankAccountRepository BankAccountRepository { get; }
+
        
     }
 }

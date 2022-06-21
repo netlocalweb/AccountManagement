@@ -85,6 +85,10 @@ namespace Repository
         {
             ErrorMessage = string.Empty;
             var code = RepositoryContext.Categories.Where(x => x.Code == category.Code).FirstOrDefault();
+            if(code == null)
+            {
+                return true;
+            }
             if(code.Id == category.Id)
             {
                 return true;

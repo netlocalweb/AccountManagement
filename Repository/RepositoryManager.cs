@@ -10,6 +10,7 @@ namespace Repository
         private ICurrencyRepository _currencyRepository;
         private ICategoryRepository _categoryRepository;
         private IProductRepository _productRepository;
+        private IBankAccountRepository _bankAccountRepository;
        
         
 
@@ -63,6 +64,16 @@ namespace Repository
             }
         }
 
+        public IBankAccountRepository BankAccountRepository
+        {
+            get
+            {
+                if (_bankAccountRepository == null)
+                    _bankAccountRepository = new BankAccountRepository(_repositoryContext);
+
+                return _bankAccountRepository;
+            }
+        }
 
 
     }
