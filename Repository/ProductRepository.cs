@@ -22,9 +22,17 @@ namespace Repository
         //Method CREATE
         public void CreateRecord(Product product, out string ErrorMessage)
         {
-            
+            var objCategory = RepositoryContext.Categories.Where(x => x.Id == product.CategoryId).FirstOrDefault();
+            if(objCategory == null)
+            {
+                ErrorMessage = "Category Id not found";
+            }
+            else
+            {
                 ErrorMessage = "Product added to database!";
                 RepositoryContext.Products.Add(product);
+            }
+                
         
         }
 
@@ -61,13 +69,20 @@ namespace Repository
             string errorMessage = string.Empty;
 
             var oldProduct = RepositoryContext.Products.Where(x => x.Id == id).FirstOrDefault();
-
-            oldProduct.Name = newProduct.Name;
-            oldProduct.ShortDescription = newProduct.ShortDescription;
-            oldProduct.LongDescription = newProduct.LongDescription;
-            oldProduct.Price = newProduct.Price;
-            oldProduct.DateModified = DateTime.Now;
-            ErrorMessage = "Product updated sucefully!";
+            var objCategory = RepositoryContext.Categories.Where(x => x.Id == newProduct.CategoryId).FirstOrDefault();
+            if (objCategory == null)
+            {
+                ErrorMessage = "Category Id not found";
+            }
+            else
+            { 
+                oldProduct.Name = newProduct.Name;
+                oldProduct.ShortDescription = newProduct.ShortDescription;
+                oldProduct.LongDescription = newProduct.LongDescription;
+                oldProduct.Price = newProduct.Price;
+                oldProduct.DateModified = DateTime.Now;
+                ErrorMessage = "Product updated sucefully!";
+            }
         }
 
         public void UploadImage(int id, string Image)

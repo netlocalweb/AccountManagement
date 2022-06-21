@@ -19,7 +19,15 @@ namespace Repository
         //Method CREATE
         public void CreateRecord(BankAccount bankAccount, out string ErrorMessage)
         {
-            if (CodeValidator(bankAccount) == true)
+            var objCurrency = RepositoryContext.Currencies.Where(x => x.Id == bankAccount.CurrencyId).FirstOrDefault();
+            var objClient = RepositoryContext.Clients.Where(x => x.Id == bankAccount.ClientId).FirstOrDefault();
+            if(objCurrency == null)
+            {
+                ErrorMessage = "Currency Id not found";
+            }else if(objClient == null)
+            {
+                ErrorMessage = "Client Id not found";
+            }else if (CodeValidator(bankAccount) == true)
             {
                 RepositoryContext.BankAccounts.Add(bankAccount);
                 ErrorMessage = "Bank Account added to database!";
@@ -61,14 +69,27 @@ namespace Repository
             string errorMessage = string.Empty;
 
             var oldBankAccount = RepositoryContext.BankAccounts.Where(x => x.Id == id).FirstOrDefault();
-
-            ErrorMessage = "Bank Account updated sucefully!";
-            oldBankAccount.Code = bankAccount.Code;
-            oldBankAccount.Name = bankAccount.Name;
-            oldBankAccount.CurrencyId = bankAccount.CurrencyId;
-            oldBankAccount.Balance = bankAccount.Balance;
-            oldBankAccount.IsActive = bankAccount.IsActive;
-            oldBankAccount.DateModified = DateTime.Now;
+            var objCurrency = RepositoryContext.Currencies.Where(x => x.Id == bankAccount.CurrencyId).FirstOrDefault();
+            var objClient = RepositoryContext.Clients.Where(x => x.Id == bankAccount.ClientId).FirstOrDefault();
+            
+            if (objCurrency == null)
+            {
+                ErrorMessage = "Currency Id not found";
+            }
+            else if (objClient == null)
+            {
+                ErrorMessage = "Client Id not found";
+            }
+            else
+            {
+                ErrorMessage = "Bank Account updated sucefully!";
+                oldBankAccount.Code = bankAccount.Code;
+                oldBankAccount.Name = bankAccount.Name;
+                oldBankAccount.CurrencyId = bankAccount.CurrencyId;
+                oldBankAccount.Balance = bankAccount.Balance;
+                oldBankAccount.IsActive = bankAccount.IsActive;
+                oldBankAccount.DateModified = DateTime.Now;
+            }
         }
 
         public bool CodeValidator(BankAccount newBankAccount)
