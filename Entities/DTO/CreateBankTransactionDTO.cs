@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Entities.DTO
+{
+    public class CreateBankTransactionDTO
+    {
+        
+        public int BankAccountId { get; set; }
+       
+        [Required(ErrorMessage = "Enter Action")]
+        public int Action { get; set; }
+        [Required(ErrorMessage = "Enter Amount")]
+        public decimal Amount { get; set; }
+        [Required]
+        public bool IsActive { get; set; }
+        public DateTime DateCreated { get; set; }
+        
+
+    }
+}

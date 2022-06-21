@@ -25,6 +25,7 @@ namespace Entities
         public DbSet<Product> Products { get; set; }
 
         public DbSet<BankAccount> BankAccounts { get; set; }
+        public DbSet<BankTransaction> BankTransactions { get; set; }
        
     }
 }

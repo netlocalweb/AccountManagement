@@ -77,9 +77,9 @@ namespace AccountManagement.Controllers
             _repository.BankAccountRepository.RemoveRecord(id);
             _repository.BankAccountRepository.SaveChanges();
 
-            _logger.LogInfo("Delete a category record");
+            _logger.LogInfo("Bank Account Inactive");
 
-            return Ok("Category deleted from database.");
+            return Ok("Bank Account Inactive");
         }
     }
 }

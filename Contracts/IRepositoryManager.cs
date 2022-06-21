@@ -12,6 +12,8 @@
 
         IBankAccountRepository BankAccountRepository { get; }
 
+        IBankTransactionRepository BankTransactionRepository { get; }
+
        
     }
 }

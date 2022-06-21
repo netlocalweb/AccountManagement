@@ -47,6 +47,7 @@ namespace Repository
         {
             var bankAccount = RepositoryContext.BankAccounts.Where(x => x.Id == id).FirstOrDefault();
             bankAccount.IsActive = false;
+            bankAccount.DateModified = DateTime.Now;
             RepositoryContext.BankAccounts.Update(bankAccount);
         }
 
