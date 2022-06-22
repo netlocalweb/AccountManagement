@@ -1,7 +1,4 @@
 ﻿using Contracts;
-using Entities;
-using Entities.DTO;
-using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountManagement.Controllers
@@ -21,7 +18,7 @@ namespace AccountManagement.Controllers
             _dapperRepository = dapperRepository;
         }
 
-        
+
 
         //GET: FIRSTAPI
         [HttpGet("FirstAPI")]
@@ -49,7 +46,7 @@ namespace AccountManagement.Controllers
         [HttpGet("ThirdAPI")]
         public IActionResult Third(int id)
         {
-            var testStr = _dapperRepository.ThirdApi( id);
+            var testStr = _dapperRepository.ThirdApi(id);
 
             _logger.LogInfo("Third Internship Custom API");
 

@@ -12,16 +12,16 @@ namespace Repository
         private IProductRepository _productRepository;
         private IBankAccountRepository _bankAccountRepository;
         private IBankTransactionRepository _bankTransactionRepository;
-        
-       
-        
+
+
+
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
             _repositoryContext = repositoryContext;
         }
 
-        
+
         public IClientsRepository ClientsRepository
         {
             get

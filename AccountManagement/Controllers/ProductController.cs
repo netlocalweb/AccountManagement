@@ -1,12 +1,9 @@
 ﻿using Contracts;
-using Entities;
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
-using System.IO;
 using System;
+using System.IO;
 
 namespace AccountManagement.Controllers
 {
@@ -30,15 +27,15 @@ namespace AccountManagement.Controllers
         [HttpPost("create")]
         public IActionResult Create([FromBody] CreateProductDTO productDTO)
         {
-            var product = new Product(productDTO.Name, productDTO.ShortDescription, productDTO.LongDescription,productDTO.CategoryId, productDTO.Price);
-            
+            var product = new Product(productDTO.Name, productDTO.ShortDescription, productDTO.LongDescription, productDTO.CategoryId, productDTO.Price);
+
             _repository.ProductRepository.CreateRecord(product, out string ErrorMessage);
             _repository.ProductRepository.SaveChanges();
-            
+
             _logger.LogInfo(ErrorMessage);
-            
+
             return Ok(ErrorMessage);
-            
+
         }
 
         //GET: GETBYID
@@ -47,7 +44,14 @@ namespace AccountManagement.Controllers
         {
             var testStr = _repository.ProductRepository.GetRecordById(id);
             _logger.LogInfo("Get Category records by id");
-            return Ok(testStr);
+            if (testStr == null)
+            {
+                return NotFound("There is no Product with this ID in Database");
+            }
+            else
+            {
+                return Ok(testStr);
+            }
         }
 
         //GET: GETALL
@@ -65,7 +69,7 @@ namespace AccountManagement.Controllers
         [HttpPut("update/{id}")]
         public IActionResult Update(int id, [FromBody] CreateProductDTO productDTO)
         {
-            var productUpdated = new Product(productDTO.Name, productDTO.ShortDescription, productDTO.LongDescription,productDTO.CategoryId, productDTO.Price);
+            var productUpdated = new Product(productDTO.Name, productDTO.ShortDescription, productDTO.LongDescription, productDTO.CategoryId, productDTO.Price);
 
             _repository.ProductRepository.UpdateRecord(id, productUpdated, out string ErrorMessage);
             _repository.ProductRepository.SaveChanges();
@@ -78,31 +82,49 @@ namespace AccountManagement.Controllers
         [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
         {
-            _repository.ProductRepository.RemoveRecord(id);
-            _repository.ProductRepository.SaveChanges();
+            _repository.ProductRepository.RemoveRecord(id, out bool check);
+            if (check == false)
+            {
+                return NotFound("There is no Product with this ID in Database");
+            }
+            else
+            {
+                _repository.ProductRepository.SaveChanges();
 
-            _logger.LogInfo("Delete a category record");
+                _logger.LogInfo("Delete a category record");
 
-            return Ok("Category deleted from database.");
+                return Ok("Category deleted from database.");
+            }
+            
+            
+            
         }
-        
+
         [HttpPost("uploadImageWithId/{id}")]
         public IActionResult UploadImage(int id, [FromForm] FileUploadDTO imageToUpload)
         {
 
             var productObj = _repository.ProductRepository.GetRecordById(id);
-            var base64Sring = "";
-            using (var ms = new MemoryStream())
+            if(productObj == null)
             {
-                imageToUpload.files.CopyTo(ms);
-                base64Sring = Convert.ToBase64String(ms.ToArray());
+                return NotFound("There is no Product with this ID in Database");
+            }
+            else
+            {
+                var base64Sring = "";
+                using (var ms = new MemoryStream())
+                {
+                    imageToUpload.files.CopyTo(ms);
+                    base64Sring = Convert.ToBase64String(ms.ToArray());
+                }
+
+                _repository.ProductRepository.UploadImage(id, base64Sring);
+                _repository.ProductRepository.SaveChanges();
+
+                _logger.LogInfo("Product image added sucefully!");
+                return Ok("Product image added sucefully!");
             }
             
-            _repository.ProductRepository.UploadImage(id, base64Sring);
-            _repository.ProductRepository.SaveChanges();
-
-            _logger.LogInfo("Product image added sucefully!");
-            return Ok("Product image added sucefully!");
         }
 
         //GET: GETBYID
@@ -110,8 +132,16 @@ namespace AccountManagement.Controllers
         public IActionResult GetImage(int id)
         {
             var productObj = _repository.ProductRepository.GetRecordById(id);
-            _logger.LogInfo("Get Category records by id");
-            return Ok(productObj.Image);
+            if( productObj == null)
+            {
+                return NotFound("There is no Product with this ID in Database");
+            }
+            else
+            {
+                _logger.LogInfo("Get Category records by id");
+                return Ok(productObj.Image);
+            }
+            
         }
 
 

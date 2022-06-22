@@ -1,5 +1,4 @@
 ﻿using Contracts;
-using Entities;
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +29,7 @@ namespace AccountManagement.Controllers
 
             _repository.ClientsRepository.CreateRecord(client, out string ErrorMessage);
             _repository.ClientsRepository.SaveChanges();
-           
+
             _logger.LogInfo("Create a new client record");
 
             return Ok(ErrorMessage);
@@ -43,7 +42,14 @@ namespace AccountManagement.Controllers
         {
             var testStr = _repository.ClientsRepository.GetRecordById(id);
             _logger.LogInfo("Get Client records by id");
-            return Ok(testStr);
+            if (testStr == null)
+            {
+                return NotFound("There is no user with this ID in Database");
+            }
+            else
+            {
+                return Ok(testStr);
+            }
         }
 
         //GET: GETALL
@@ -75,12 +81,20 @@ namespace AccountManagement.Controllers
         [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
         {
-            _repository.ClientsRepository.RemoveRecord(id);
-            _repository.ClientsRepository.SaveChanges();
+            _repository.ClientsRepository.RemoveRecord(id, out bool check);
+            if (check == false)
+            {
+                return NotFound("There is no client with this ID in Database");
+            }
+            else
+            {
+                _repository.ClientsRepository.SaveChanges();
 
-            _logger.LogInfo("Delete a clients record");
+                _logger.LogInfo("Delete a clients record");
 
-            return Ok("Client deleted from database");
+                return Ok("Client deleted from database");
+            }
+            
         }
 
     }

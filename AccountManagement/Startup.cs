@@ -1,5 +1,4 @@
 using AccountManagement.Extensions;
-using AspNetCoreRateLimit;
 using AutoMapper;
 using Contracts;
 using Entities;
@@ -46,7 +45,7 @@ namespace AccountManagement
             services.AddSwaggerGen(s => s.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
             {
                 Title = "MyAPI",
-                Version = "V1", 
+                Version = "V1",
                 Description = "Des1"
             }));
 

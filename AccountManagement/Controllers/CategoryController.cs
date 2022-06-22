@@ -1,5 +1,4 @@
 ﻿using Contracts;
-using Entities;
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +9,11 @@ namespace AccountManagement.Controllers
     [ApiController]
     public class CategoryController : Controller
     {
-        
+
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IDapperRepository _dapperRepository;
-     
+
         public CategoryController(IRepositoryManager repository, ILoggerManager logger, IDapperRepository dapperRepository)
         {
             _repository = repository;
@@ -43,7 +42,14 @@ namespace AccountManagement.Controllers
         {
             var testStr = _repository.CategoryRepository.GetRecordById(id);
             _logger.LogInfo("Get Category records by id");
-            return Ok(testStr);
+            if (testStr == null)
+            {
+                return NotFound("There is no Category with this ID in Database");
+            }
+            else
+            {
+                return Ok(testStr);
+            }
         }
 
         //GET: GETALL
@@ -74,12 +80,20 @@ namespace AccountManagement.Controllers
         [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
         {
-            _repository.CategoryRepository.RemoveRecord(id);
-            _repository.CategoryRepository.SaveChanges();
+            _repository.CategoryRepository.RemoveRecord(id, out bool check);
+            if (check == false)
+            {
+                return NotFound("There is no Category with this ID in Database");
+            }
+            else
+            {
+                _repository.CategoryRepository.SaveChanges();
 
-            _logger.LogInfo("Delete a category record");
+                _logger.LogInfo("Delete a category record");
 
-            return Ok("Category deleted from database.");
+                return Ok("Category deleted from database.");
+            }
+            
         }
     }
 }

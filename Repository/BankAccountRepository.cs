@@ -21,13 +21,15 @@ namespace Repository
         {
             var objCurrency = RepositoryContext.Currencies.Where(x => x.Id == bankAccount.CurrencyId).FirstOrDefault();
             var objClient = RepositoryContext.Clients.Where(x => x.Id == bankAccount.ClientId).FirstOrDefault();
-            if(objCurrency == null)
+            if (objCurrency == null)
             {
                 ErrorMessage = "Currency Id not found";
-            }else if(objClient == null)
+            }
+            else if (objClient == null)
             {
                 ErrorMessage = "Client Id not found";
-            }else if (CodeValidator(bankAccount) == true)
+            }
+            else if (CodeValidator(bankAccount) == true)
             {
                 RepositoryContext.BankAccounts.Add(bankAccount);
                 ErrorMessage = "Bank Account added to database!";
@@ -36,7 +38,7 @@ namespace Repository
             {
                 ErrorMessage = "User already has a bank account with this code! Record NOT added to database";
             }
-            
+
         }
         //GETALL Method
         public IEnumerable<BankAccount> GetAllRecords()
@@ -48,15 +50,26 @@ namespace Repository
         public BankAccount GetRecordById(int id)
         {
             var bankAccount = RepositoryContext.BankAccounts.Where(x => x.Id == id).FirstOrDefault();
-            return bankAccount;
+           return bankAccount;
+           
+            
         }
         //Remove Record Method
-        public void RemoveRecord(int id)
+        public void RemoveRecord(int id, out bool check)
         {
             var bankAccount = RepositoryContext.BankAccounts.Where(x => x.Id == id).FirstOrDefault();
-            bankAccount.IsActive = false;
-            bankAccount.DateModified = DateTime.Now;
-            RepositoryContext.BankAccounts.Update(bankAccount);
+            if(bankAccount == null)
+            {
+                check = false;
+            }
+            else
+            {
+                check = true;
+                bankAccount.IsActive = false;
+                bankAccount.DateModified = DateTime.Now;
+                RepositoryContext.BankAccounts.Update(bankAccount);
+            }
+            
         }
 
         public void SaveChanges()
@@ -71,8 +84,10 @@ namespace Repository
             var oldBankAccount = RepositoryContext.BankAccounts.Where(x => x.Id == id).FirstOrDefault();
             var objCurrency = RepositoryContext.Currencies.Where(x => x.Id == bankAccount.CurrencyId).FirstOrDefault();
             var objClient = RepositoryContext.Clients.Where(x => x.Id == bankAccount.ClientId).FirstOrDefault();
-            
-            if (objCurrency == null)
+            if(oldBankAccount == null)
+            {
+                ErrorMessage = "There is no Bank Account with this ID in Database";
+            }else if (objCurrency == null)
             {
                 ErrorMessage = "Currency Id not found";
             }
@@ -94,15 +109,15 @@ namespace Repository
 
         public bool CodeValidator(BankAccount newBankAccount)
         {
-           
+
             var codeValidatior = RepositoryContext.BankAccounts.Where(x => x.Code == newBankAccount.Code && x.ClientId == newBankAccount.ClientId).FirstOrDefault();
-            
+
             if (codeValidatior == null)
                 return true;
             else
                 return false;
-            
+
         }
-    }    
- }
+    }
+}
 

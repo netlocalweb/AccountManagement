@@ -6,10 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace Repository
 {
@@ -29,18 +25,20 @@ namespace Repository
         public void CreateRecord(Clients client, out string ErrorMessage)
         {
             string errorMessage = string.Empty;
-            
-            
+
+
             //Email - Phone - Username Validation
             if (DuplicateValidation(client, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
-                
-            }else if(IsValidEmail(client, out errorMessage) == false)
+
+            }
+            else if (IsValidEmail(client, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
-                
-            }else if(ValidatePassword(client, out errorMessage) == false)
+
+            }
+            else if (ValidatePassword(client, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
             }
@@ -52,7 +50,38 @@ namespace Repository
                 client.PasswordSalt = passwordSalt;
                 RepositoryContext.Clients.Add(client);
             }
-            
+
+        }
+        //Register Method for Authentication
+        public void Register(Clients client, out string ErrorMessage)
+        {
+            string errorMessage = string.Empty;
+
+
+            //Email - Phone - Username Validation
+            if (DuplicateValidation(client, out errorMessage) == false)
+            {
+                ErrorMessage = errorMessage;
+
+            }
+            else if (IsValidEmail(client, out errorMessage) == false)
+            {
+                ErrorMessage = errorMessage;
+
+            }
+            else if (ValidatePassword(client, out errorMessage) == false)
+            {
+                ErrorMessage = errorMessage;
+            }
+            else
+            {
+                ErrorMessage = "Client registered sucefully";
+                CreatePasswordHash(client.Password, out byte[] passwordHash, out byte[] passwordSalt);
+                client.PasswordHash = passwordHash;
+                client.PasswordSalt = passwordSalt;
+                RepositoryContext.Clients.Add(client);
+            }
+
         }
 
         //Method that generates password Hash
@@ -73,7 +102,8 @@ namespace Repository
             {
                 ErrorMessage = "User not found!";
                 client = null;
-            }else if (!VerifyPasswordHash(password, obj.PasswordHash, obj.PasswordSalt))
+            }
+            else if (!VerifyPasswordHash(password, obj.PasswordHash, obj.PasswordSalt))
             {
                 ErrorMessage = "Wrong password!";
                 client = null;
@@ -89,7 +119,7 @@ namespace Repository
         //Verify Password Method
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            using(var hmac = new HMACSHA512(passwordSalt))
+            using (var hmac = new HMACSHA512(passwordSalt))
             {
                 var computeHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 return computeHash.SequenceEqual(passwordHash);
@@ -102,7 +132,7 @@ namespace Repository
         {
             var testAll = RepositoryContext.Clients;
             return (IEnumerable<Clients>)testAll;
-            
+
         }
         //Method GETBYID
         public Clients GetRecordById(int id)
@@ -112,24 +142,38 @@ namespace Repository
         }
 
         //Method DELETE
-        public void RemoveRecord(int id)
+        public void RemoveRecord(int id, out bool check)
         {
             var client = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
-            RepositoryContext.Clients.Remove(client);
+            if(client == null)
+            {
+                check = false;
+            }
+            else
+            {
+                check = true;
+                RepositoryContext.Clients.Remove(client);
+            }
+            
         }
 
         public void SaveChanges()
         {
             RepositoryContext.SaveChanges();
         }
-        
+
         //Method UPDATE
         public void UpdateRecord(int id, Clients clients, out string ErrorMessage)
         {
             string errorMessage = string.Empty;
+            var clientCheck = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
 
             //Email - Phone - Username Validation
-            if (DuplicateValidation(clients, out errorMessage) == false)
+            if(clientCheck == null)
+            {
+                ErrorMessage = "There is no Client with this ID in Database";
+            }
+            else if (DuplicateValidation(clients, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
 
@@ -157,7 +201,7 @@ namespace Repository
                 client.Password = clients.Password;
             }
 
-            
+
         }
 
         //Duplicate Records Validation Method

@@ -1,5 +1,4 @@
-﻿using Entities.DTO;
-using Entities.Models;
+﻿using Entities.Models;
 using System.Collections.Generic;
 
 namespace Contracts
@@ -8,18 +7,18 @@ namespace Contracts
     {
         //GETALL Method Interface
         IEnumerable<Clients> GetAllRecords();
-        
-        
+
+
         //GETBYID Method Interface
         Clients GetRecordById(int id);
-        
-        
+
+
         //DELETE Method Interface
         void RemoveRecord(int id);
-        
+
         //CREATE Method Interface
         void CreateRecord(Clients client, out string ErrorMessage);
-        
+
         //Update Method Interface
         void UpdateRecord(int id, Clients clients, out string ErrorMessage);
 
@@ -29,6 +28,6 @@ namespace Contracts
         //SAVE Method Interface
         void SaveChanges();
 
-      
+
     }
 }

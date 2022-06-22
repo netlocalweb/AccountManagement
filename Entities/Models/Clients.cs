@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.Models
 {
     public class Clients
     {
-        
+
 
         [Key]
         public int Id { get; set; }
-        [Required(ErrorMessage ="Enter Firstname")]
+        [Required(ErrorMessage = "Enter Firstname")]
         public string FirstName { get; set; }
-        [Required(ErrorMessage ="Enter Lastname")]
+        [Required(ErrorMessage = "Enter Lastname")]
         public string LastName { get; set; }
         [Required(ErrorMessage = "Enter Email")]
         public string Email { get; set; }
@@ -25,15 +20,15 @@ namespace Entities.Models
         [Required(ErrorMessage = "Enter Phone Number")]
         public string Phone { get; set; }
         public DateTime DateCreated { get; set; }
-        public DateTime DateModified { get; set; }
+        public DateTime? DateModified { get; set; }
         [Required(ErrorMessage = "Enter Username")]
         public string Username { get; set; }
         [Required(ErrorMessage = "Enter Password")]
         public string Password { get; set; }
 
-        public byte [] PasswordHash { get; set; }
-        public byte [] PasswordSalt { get; set; }
-        
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
+
         public Clients()
         {
 
@@ -49,10 +44,10 @@ namespace Entities.Models
             this.DateCreated = DateTime.Now;
             this.Username = Username;
             this.Password = Password;
-            
+
 
         }
 
-        
+
     }
 }

@@ -15,7 +15,7 @@ namespace Entities
             base.OnModelCreating(modelBuilder);
         }
 
-               
+
         public DbSet<Clients> Clients { get; set; }
 
         public DbSet<Currency> Currencies { get; set; }
@@ -26,6 +26,6 @@ namespace Entities
 
         public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<BankTransaction> BankTransactions { get; set; }
-       
+
     }
 }

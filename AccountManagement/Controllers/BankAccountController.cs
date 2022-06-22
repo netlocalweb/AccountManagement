@@ -1,5 +1,4 @@
 ﻿using Contracts;
-using Entities;
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +9,11 @@ namespace AccountManagement.Controllers
     [ApiController]
     public class BankAccountController : Controller
     {
-        
+
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IDapperRepository _dapperRepository;
-     
+
         public BankAccountController(IRepositoryManager repository, ILoggerManager logger, IDapperRepository dapperRepository)
         {
             _repository = repository;
@@ -43,7 +42,14 @@ namespace AccountManagement.Controllers
         {
             var testStr = _repository.BankAccountRepository.GetRecordById(id);
             _logger.LogInfo("Get Bank Account record by id");
-            return Ok(testStr);
+            if (testStr == null)
+            {
+                return NotFound("There is no Bank Account with this ID in Database");
+            }
+            else
+            {
+                return Ok(testStr);
+            }
         }
 
         //GET: GETALL
@@ -74,12 +80,20 @@ namespace AccountManagement.Controllers
         [HttpDelete("inactive/{id}")]
         public IActionResult Delete(int id)
         {
-            _repository.BankAccountRepository.RemoveRecord(id);
-            _repository.BankAccountRepository.SaveChanges();
+            _repository.BankAccountRepository.RemoveRecord(id, out bool check);
+            if(check == false)
+            {
+                return NotFound("There is no Bank Account with this ID in Database");
+            }
+            else
+            {
+                _repository.BankAccountRepository.SaveChanges();
 
-            _logger.LogInfo("Bank Account Inactive");
+                _logger.LogInfo("Bank Account Inactive");
 
-            return Ok("Bank Account Inactive");
+                return Ok("Bank Account Inactive");
+            }
+            
         }
     }
 }

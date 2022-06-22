@@ -29,9 +29,9 @@ namespace Repository
                 ErrorMessage = "Currency added to database.";
                 RepositoryContext.Currencies.Add(currency);
             }
-           
+
         }
-        
+
 
 
         //Method GETALL
@@ -39,35 +39,47 @@ namespace Repository
         {
             var testAll = RepositoryContext.Currencies;
             return (IEnumerable<Currency>)testAll;
-            
+
         }
         //Method GETBYID
         public Currency GetRecordById(int id)
         {
             var currency = RepositoryContext.Currencies.Where(x => x.Id == id).FirstOrDefault();
             return currency;
+            
         }
 
         //Method DELETE
-        public void RemoveRecord(int id)
+        public void RemoveRecord(int id, out bool check)
         {
             var currency = RepositoryContext.Currencies.Where(x => x.Id == id).FirstOrDefault();
-            RepositoryContext.Currencies.Remove(currency);
+            if(currency == null)
+            {
+                check = false;
+            }
+            else
+            {
+                check = true;
+                RepositoryContext.Currencies.Remove(currency);
+            }
+            
         }
 
         public void SaveChanges()
         {
             RepositoryContext.SaveChanges();
         }
-        
+
         //Method UPDATE
         public void UpdateRecord(int id, Currency newCurrency, out string ErrorMessage)
         {
             string errorMessage = string.Empty;
-            
-            var oldCurrency = RepositoryContext.Currencies.Where(x => x.Id == id).FirstOrDefault();
 
-            if(DuplicateValidation(newCurrency, out errorMessage) == false)
+            var oldCurrency = RepositoryContext.Currencies.Where(x => x.Id == id).FirstOrDefault();
+            if(oldCurrency == null)
+            {
+                ErrorMessage = "There is no Currency with this ID in Database";
+            }else if (DuplicateValidation(newCurrency, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
             }
@@ -79,7 +91,7 @@ namespace Repository
                 oldCurrency.ExchangeRate = newCurrency.ExchangeRate;
                 oldCurrency.DateModified = DateTime.Now;
             }
-            
+
         }
 
         //Code Duplicate Method

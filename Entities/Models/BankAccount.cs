@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.Models
 {
@@ -12,7 +8,7 @@ namespace Entities.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required(ErrorMessage="Enter code")]
+        [Required(ErrorMessage = "Enter code")]
         public string Code { get; set; }
         [Required(ErrorMessage = "Enter name")]
         public string Name { get; set; }
@@ -30,7 +26,7 @@ namespace Entities.Models
         public bool IsActive { get; set; }
         [Required]
         public DateTime DateCreated { get; set; }
-        public DateTime DateModified { get; set;}
+        public DateTime? DateModified { get; set; }
 
         public BankAccount() { }
 

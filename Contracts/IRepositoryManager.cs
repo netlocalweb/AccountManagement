@@ -2,7 +2,7 @@
 {
     public interface IRepositoryManager
     {
-        IClientsRepository ClientsRepository { get; }  
+        IClientsRepository ClientsRepository { get; }
 
         ICurrencyRepository CurrencyRepository { get; }
 
@@ -14,6 +14,6 @@
 
         IBankTransactionRepository BankTransactionRepository { get; }
 
-       
+
     }
 }

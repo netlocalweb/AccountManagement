@@ -1,5 +1,4 @@
 ﻿using Contracts;
-using Entities;
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +9,11 @@ namespace AccountManagement.Controllers
     [ApiController]
     public class BankTransactionController : Controller
     {
-        
+
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IDapperRepository _dapperRepository;
-     
+
         public BankTransactionController(IRepositoryManager repository, ILoggerManager logger, IDapperRepository dapperRepository)
         {
             _repository = repository;
@@ -42,7 +41,14 @@ namespace AccountManagement.Controllers
         {
             var testStr = _repository.BankTransactionRepository.GetRecordById(id);
             _logger.LogInfo("Get Bank Account record by id");
-            return Ok(testStr);
+            if (testStr == null)
+            {
+                return NotFound("There is no Bank Transaction with this ID in Database");
+            }
+            else
+            {
+                return Ok(testStr);
+            }
         }
 
         //GET: GETALL
@@ -56,18 +62,26 @@ namespace AccountManagement.Controllers
             return Ok(testStr);
         }
 
-        
+
 
         //DELETE: DELETE
         [HttpDelete("inactive/{id}")]
         public IActionResult Delete(int id)
         {
-            _repository.BankTransactionRepository.RemoveRecord(id);
-            _repository.BankTransactionRepository.SaveChanges();
+            _repository.BankTransactionRepository.RemoveRecord(id, out bool check);
+            if(check == false)
+            {
+                return NotFound("There is no Bank Transaction with this ID in Database");
+            }
+            else
+            {
+                _repository.BankTransactionRepository.SaveChanges();
 
-            _logger.LogInfo("Make transaction inactive");
+                _logger.LogInfo("Make transaction inactive");
 
-            return Ok("Transaction Inactive");
+                return Ok("Transaction Inactive");
+            }
+            
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Contracts;
-using Entities;
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +41,14 @@ namespace AccountManagement.Controllers
         {
             var testStr = _repository.CurrencyRepository.GetRecordById(id);
             _logger.LogInfo("Get currencies records by id");
-            return Ok(testStr);
+            if (testStr == null)
+            {
+                return NotFound("There is no Currency with this ID in Database");
+            }
+            else
+            {
+                return Ok(testStr);
+            }
         }
 
         //GET: GETALL
@@ -73,12 +79,20 @@ namespace AccountManagement.Controllers
         [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
         {
-            _repository.CurrencyRepository.RemoveRecord(id);
-            _repository.CurrencyRepository.SaveChanges();
+            _repository.CurrencyRepository.RemoveRecord(id, out bool check);
+            if(check == false)
+            {
+                return NotFound("There is no Currency with this ID in Database");
+            }
+            else
+            {
+                _repository.CurrencyRepository.SaveChanges();
 
-            _logger.LogInfo("Delete a currency record");
+                _logger.LogInfo("Delete a currency record");
 
-            return Ok("Currency deleted form database.");
+                return Ok("Currency deleted form database.");
+            }
+            
         }
     }
 }

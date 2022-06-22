@@ -1,10 +1,5 @@
-﻿using Entities.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.DTO
 {
@@ -18,11 +13,11 @@ namespace Entities.DTO
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         public decimal Price { get; set; }
-        
+
 
         public DateTime DateCreated { get; set; }
 
-        public CreateProductDTO(string name, string shortDescription, string longDescription,int categoryId, decimal price)
+        public CreateProductDTO(string name, string shortDescription, string longDescription, int categoryId, decimal price)
         {
             Name = name;
             ShortDescription = shortDescription;

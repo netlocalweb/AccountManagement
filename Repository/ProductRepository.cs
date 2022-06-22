@@ -1,12 +1,9 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Repository
 {
@@ -23,7 +20,7 @@ namespace Repository
         public void CreateRecord(Product product, out string ErrorMessage)
         {
             var objCategory = RepositoryContext.Categories.Where(x => x.Id == product.CategoryId).FirstOrDefault();
-            if(objCategory == null)
+            if (objCategory == null)
             {
                 ErrorMessage = "Category Id not found";
             }
@@ -32,17 +29,17 @@ namespace Repository
                 ErrorMessage = "Product added to database!";
                 RepositoryContext.Products.Add(product);
             }
-                
-        
+
+
         }
 
-        
+
         //Method GETALL
         public IEnumerable<Product> GetAllRecords()
         {
             var testAll = RepositoryContext.Products;
             return (IEnumerable<Product>)testAll;
-            
+
         }
         //Method GETBYID
         public Product GetRecordById(int id)
@@ -52,10 +49,19 @@ namespace Repository
         }
 
         //Method DELETE
-        public void RemoveRecord(int id)
+        public void RemoveRecord(int id, out bool check)
         {
             var product = RepositoryContext.Products.Where(x => x.Id == id).FirstOrDefault();
-            RepositoryContext.Products.Remove(product);
+            if(product == null)
+            {
+                check = false;
+            }
+            else
+            {
+                check = true;
+                RepositoryContext.Products.Remove(product);
+            }
+            
         }
 
         public void SaveChanges()
@@ -70,12 +76,15 @@ namespace Repository
 
             var oldProduct = RepositoryContext.Products.Where(x => x.Id == id).FirstOrDefault();
             var objCategory = RepositoryContext.Categories.Where(x => x.Id == newProduct.CategoryId).FirstOrDefault();
-            if (objCategory == null)
+            if(oldProduct == null)
+            {
+                ErrorMessage = "There is no Product with this ID in Database";
+            }else if (objCategory == null)
             {
                 ErrorMessage = "Category Id not found";
             }
             else
-            { 
+            {
                 oldProduct.Name = newProduct.Name;
                 oldProduct.ShortDescription = newProduct.ShortDescription;
                 oldProduct.LongDescription = newProduct.LongDescription;
@@ -91,8 +100,8 @@ namespace Repository
             product.Image = Image;
         }
 
-        
-        
+
+
 
     }
 }

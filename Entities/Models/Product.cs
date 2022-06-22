@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.Models
 {
@@ -19,32 +15,33 @@ namespace Entities.Models
         [Required(ErrorMessage = "Enter long description")]
         public string LongDescription { get; set; }
         [Required(ErrorMessage = "Enter category id")]
-        public int CategoryId { get;set; }
-        [ForeignKey ("CategoryId")]
+        public int CategoryId { get; set; }
+        [ForeignKey("CategoryId")]
         public Category Category { get; set; }
         [Required(ErrorMessage = "Enter price")]
         public decimal Price { get; set; }
         public string Image { get; set; }
 
         public DateTime DateCreated { get; set; }
-        public DateTime DateModified { get; set; }
-
         
+        public DateTime? DateModified { get; set; }
+
+
         public Product() { }
 
-        public Product(string name, string shortDescription, string longDescription,int CategoryId,  decimal price)
+        public Product(string name, string shortDescription, string longDescription, int CategoryId, decimal price)
         {
-            
+
             this.Name = name;
             this.ShortDescription = shortDescription;
             this.LongDescription = longDescription;
             this.CategoryId = CategoryId;
             this.Price = price;
             this.DateCreated = DateTime.Now;
-            
-            
+
+
         }
 
-        
+
     }
 }

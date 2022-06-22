@@ -1,6 +1,4 @@
-﻿using AutoMapper.Configuration;
-using Contracts;
-using Entities;
+﻿using Contracts;
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 
@@ -22,14 +19,14 @@ namespace AccountManagement.Controllers
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IDapperRepository _dapperRepository;
-        
+
 
         public AuthController(IRepositoryManager repository, ILoggerManager logger, IDapperRepository dapperRepository)
         {
             _repository = repository;
             _logger = logger;
             _dapperRepository = dapperRepository;
-            
+
         }
 
         //POST: Register
@@ -39,7 +36,7 @@ namespace AccountManagement.Controllers
             var client = new Clients(createClientDto.FirstName, createClientDto.LastName, createClientDto.Email, createClientDto.Birthdate,
                 createClientDto.Phone, createClientDto.Username, createClientDto.Password);
 
-            _repository.ClientsRepository.CreateRecord(client, out string ErrorMessage);
+            _repository.ClientsRepository.Register(client, out string ErrorMessage);
             _repository.ClientsRepository.SaveChanges();
 
             _logger.LogInfo("Registerin a new client");
@@ -54,7 +51,7 @@ namespace AccountManagement.Controllers
         {
             _repository.ClientsRepository.LoginValidation(register.Username, register.Password, out string ErrorMessage, out Clients client);
             _logger.LogInfo("Client Login");
-            if(client != null)
+            if (client != null)
             {
                 string token = CreateToken(client);
                 return Ok(token);
@@ -64,7 +61,7 @@ namespace AccountManagement.Controllers
                 return Ok(ErrorMessage);
             }
         }
-        
+
         //Crete Token Method - valid for 30 minutes
         private string CreateToken(Clients client)
         {
@@ -88,6 +85,6 @@ namespace AccountManagement.Controllers
 
             return jwt;
         }
-        
+
     }
 }

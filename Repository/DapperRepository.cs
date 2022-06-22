@@ -2,7 +2,6 @@
 using Dapper;
 using Entities;
 using Entities.DTO;
-using Entities.Models;
 using System.Collections.Generic;
 
 namespace Repository
@@ -15,7 +14,7 @@ namespace Repository
         {
             _context = context;
         }
-        
+
         //First CustomAPI
         public IEnumerable<CustomFirstApiDTO> FirstAPI()
         {
@@ -29,6 +28,7 @@ namespace Repository
         //Second CustomAPI
         public IEnumerable<CustomSecondApiDTO> SecondApi(int id)
         {
+
             var query = "Select BankTransactions.Action, BankTransactions.Amount, BankTransactions.DateCreated From BankTransactions, BankAccounts Where BankTransactions.BankAccountId = BankAccounts.Id AND BankAccounts.Id = @Id Order By BankTransactions.DateCreated ASC";
             using (var connection = _context.CreateConnection())
             {
@@ -56,6 +56,6 @@ namespace Repository
                 return result;
             }
         }
-        
+
     }
 }

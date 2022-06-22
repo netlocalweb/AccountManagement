@@ -23,25 +23,26 @@ namespace Repository
             ErrorMessage = String.Empty;
             var action = bankTransaction.Action;
             var bankAccount = RepositoryContext.BankAccounts.Where(x => x.Id == bankTransaction.BankAccountId).FirstOrDefault();
-            if(bankAccount == null)
+            if (bankAccount == null)
             {
                 ErrorMessage = "Bank Account Not Found";
             }
             else
             {
-                if(action != 0 && action != 1)
+                if (action != 0 && action != 1)
                 {
                     ErrorMessage = "Input 0 for Deposit and 1 for Withdrawal";
-                }else if (action == 0)
+                }
+                else if (action == 0)
                 {
                     Deposit(bankAccount, bankTransaction.Amount, out string errorMessage);
                     ErrorMessage = errorMessage;
                     RepositoryContext.BankTransactions.Add(bankTransaction);
                 }
-                else if(action == 1)
+                else if (action == 1)
                 {
                     Withdraw(bankAccount, bankTransaction.Amount, out string errorMessage, out bool check);
-                    if(check == false)
+                    if (check == false)
                     {
                         ErrorMessage = errorMessage;
                     }
@@ -50,7 +51,7 @@ namespace Repository
                         ErrorMessage = errorMessage;
                         RepositoryContext.BankTransactions.Add(bankTransaction);
                     }
-                    
+
                 }
             }
         }
@@ -65,14 +66,24 @@ namespace Repository
         {
             var bankTransaction = RepositoryContext.BankTransactions.Where(x => x.Id == id).FirstOrDefault();
             return bankTransaction;
+            
         }
         //Remove Record Method
-        public void RemoveRecord(int id)
+        public void RemoveRecord(int id, out bool check)
         {
             var bankTransaction = RepositoryContext.BankTransactions.Where(x => x.Id == id).FirstOrDefault();
-            bankTransaction.IsActive = false;
-            bankTransaction.DateModified = DateTime.Now;
-            RepositoryContext.BankTransactions.Update(bankTransaction);
+            if(bankTransaction == null)
+            {
+                check = false;
+            }
+            else
+            {
+                check = true;
+                bankTransaction.IsActive = false;
+                bankTransaction.DateModified = DateTime.Now;
+                RepositoryContext.BankTransactions.Update(bankTransaction);
+            }
+            
         }
 
         public void SaveChanges()
@@ -93,17 +104,15 @@ namespace Repository
                 bankAccount.Balance = bankAccount.Balance - amount;
                 check = true;
                 ErrorMessage = "Bank Account balance updated: " + bankAccount.Balance.ToString();
-            }   
+            }
         }
 
         public void Deposit(BankAccount bankAccount, decimal amount, out string ErrorMessage)
         {
             bankAccount.Balance += amount;
             ErrorMessage = "Bank Account balance updated: " + bankAccount.Balance.ToString();
-        }
-        
 
-        
-    }    
- }
+        }
+    }
+}
 
