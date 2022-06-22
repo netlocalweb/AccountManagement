@@ -23,8 +23,7 @@ namespace Entities.Models
         public DateTime? DateModified { get; set; }
         [Required(ErrorMessage = "Enter Username")]
         public string Username { get; set; }
-        [Required(ErrorMessage = "Enter Password")]
-        public string Password { get; set; }
+        
 
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
@@ -34,7 +33,7 @@ namespace Entities.Models
 
         }
 
-        public Clients(string FirstName, string LastName, string Email, DateTime Birthdate, string Phone, string Username, string Password)
+        public Clients(string FirstName, string LastName, string Email, DateTime Birthdate, string Phone, string Username, byte[] PasswordHash, byte[] PasswordSalt) 
         {
             this.FirstName = FirstName;
             this.LastName = LastName;
@@ -43,8 +42,9 @@ namespace Entities.Models
             this.Phone = Phone;
             this.DateCreated = DateTime.Now;
             this.Username = Username;
-            this.Password = Password;
-
+            
+            this.PasswordHash = PasswordHash;
+            this.PasswordSalt = PasswordSalt;
 
         }
 

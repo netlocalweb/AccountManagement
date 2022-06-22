@@ -33,10 +33,10 @@ namespace AccountManagement.Controllers
         [HttpPost("Register")]
         public IActionResult Register([FromBody] CreateClientDTO createClientDto)
         {
-            var client = new Clients(createClientDto.FirstName, createClientDto.LastName, createClientDto.Email, createClientDto.Birthdate,
-                createClientDto.Phone, createClientDto.Username, createClientDto.Password);
+           // var client = new Clients(createClientDto.FirstName, createClientDto.LastName, createClientDto.Email, createClientDto.Birthdate,
+               // createClientDto.Phone, createClientDto.Username, createClientDto.Password);
 
-            _repository.ClientsRepository.Register(client, out string ErrorMessage);
+            _repository.ClientsRepository.Register(createClientDto, out string ErrorMessage);
             _repository.ClientsRepository.SaveChanges();
 
             _logger.LogInfo("Registerin a new client");

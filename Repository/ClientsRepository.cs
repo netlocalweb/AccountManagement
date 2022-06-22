@@ -22,65 +22,68 @@ namespace Repository
             RepositoryContext = repositoryContext;
         }
 
+        public
         //Method CREATE
-        public void CreateRecord(Clients client, out string ErrorMessage)
+         void CreateRecord(CreateClientDTO clientDTO, out string ErrorMessage)
         {
             string errorMessage = string.Empty;
 
 
             //Email - Phone - Username Validation
-            if (DuplicateValidation(client, out errorMessage) == false)
+            if (DuplicateValidation(clientDTO, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
 
             }
-            else if (IsValidEmail(client, out errorMessage) == false)
+            else if (IsValidEmail(clientDTO, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
 
             }
-            else if (ValidatePassword(client, out errorMessage) == false)
+            else if (ValidatePassword(clientDTO, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
             }
             else
             {
+                
+                CreatePasswordHash(clientDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+                Clients clients = new Clients(clientDTO.FirstName, clientDTO.LastName, clientDTO.Email, clientDTO.Birthdate, clientDTO.Phone, clientDTO.Username, passwordHash, passwordSalt);
+                RepositoryContext.Clients.Add(clients);
                 ErrorMessage = "Client added to database";
-                CreatePasswordHash(client.Password, out byte[] passwordHash, out byte[] passwordSalt);
-                client.PasswordHash = passwordHash;
-                client.PasswordSalt = passwordSalt;
-                RepositoryContext.Clients.Add(client);
             }
 
         }
         //Register Method for Authentication
-        public void Register(Clients client, out string ErrorMessage)
+        public void Register(CreateClientDTO clientDTO, out string ErrorMessage)
         {
             string errorMessage = string.Empty;
 
 
             //Email - Phone - Username Validation
-            if (DuplicateValidation(client, out errorMessage) == false)
+            if (DuplicateValidation(clientDTO, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
 
             }
-            else if (IsValidEmail(client, out errorMessage) == false)
+            else if (IsValidEmail(clientDTO, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
 
             }
-            else if (ValidatePassword(client, out errorMessage) == false)
+            else if (ValidatePassword(clientDTO, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
             }
             else
             {
+                
+                CreatePasswordHash(clientDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+                Clients clients = new Clients(clientDTO.FirstName, clientDTO.LastName, clientDTO.Email, clientDTO.Birthdate, clientDTO.Phone, clientDTO.Username, passwordHash, passwordSalt);
+                RepositoryContext.Clients.Add(clients);
                 ErrorMessage = "Client registered sucefully";
-                CreatePasswordHash(client.Password, out byte[] passwordHash, out byte[] passwordSalt);
-                client.PasswordHash = passwordHash;
-                client.PasswordSalt = passwordSalt;
-                RepositoryContext.Clients.Add(client);
             }
 
         }
@@ -166,32 +169,13 @@ namespace Repository
         }
 
         //Method UPDATE
-        public void UpdateRecord(int id, Clients clients, out string ErrorMessage)
+        public void UpdateRecord(int id, UpdateClientDTO clients, out string ErrorMessage)
         {
             string errorMessage = string.Empty;
             var clientCheck = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
 
             //Email - Phone - Username Validation
-            if(clientCheck == null)
-            {
-                ErrorMessage = "There is no Client with this ID in Database";
-            }
-            else if (DuplicateValidation(clients, out errorMessage) == false)
-            {
-                ErrorMessage = errorMessage;
-
-            }
-            else if (IsValidEmail(clients, out errorMessage) == false)
-            {
-                ErrorMessage = errorMessage;
-
-            }
-            else if (ValidatePassword(clients, out errorMessage) == false)
-            {
-                ErrorMessage = errorMessage;
-            }
-            else
-            {
+            
                 ErrorMessage = "Client updated";
                 var client = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
                 client.FirstName = clients.FirstName;
@@ -200,15 +184,13 @@ namespace Repository
                 client.Email = clients.Email;
                 client.Phone = clients.Phone;
                 client.DateModified = DateTime.Now;
-                client.Username = clients.Username;
-                client.Password = clients.Password;
-            }
+            
 
 
         }
 
         //Duplicate Records Validation Method
-        public bool DuplicateValidation(Clients client, out string ErrorMessage)
+        public bool DuplicateValidation(CreateClientDTO client, out string ErrorMessage)
         {
             ErrorMessage = string.Empty;
             var email = RepositoryContext.Clients.Where(x => x.Email == client.Email).FirstOrDefault();
@@ -237,7 +219,7 @@ namespace Repository
 
         }
         //Email validation method
-        public bool IsValidEmail(Clients client, out string ErrorMessage)
+        public bool IsValidEmail(CreateClientDTO client, out string ErrorMessage)
         {
             string email = client.Email;
             Regex regex = new(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
@@ -256,7 +238,7 @@ namespace Repository
         }
 
         //Password Validation Method
-        private bool ValidatePassword(Clients client, out string ErrorMessage)
+        private bool ValidatePassword(CreateClientDTO client, out string ErrorMessage)
         {
             var input = client.Password;
             ErrorMessage = string.Empty;

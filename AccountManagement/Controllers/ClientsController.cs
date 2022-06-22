@@ -24,10 +24,10 @@ namespace AccountManagement.Controllers
         [HttpPost("create")]
         public IActionResult Create([FromBody] CreateClientDTO createClientDto)
         {
-            var client = new Clients(createClientDto.FirstName, createClientDto.LastName, createClientDto.Email, createClientDto.Birthdate,
-                createClientDto.Phone, createClientDto.Username, createClientDto.Password);
+            //var client = new Clients(createClientDto.FirstName, createClientDto.LastName, createClientDto.Email, createClientDto.Birthdate,
+              //  createClientDto.Phone, createClientDto.Username, createClientDto.Password);
 
-            _repository.ClientsRepository.CreateRecord(client, out string ErrorMessage);
+            _repository.ClientsRepository.CreateRecord(createClientDto, out string ErrorMessage);
             _repository.ClientsRepository.SaveChanges();
 
             _logger.LogInfo("Create a new client record");
@@ -65,12 +65,12 @@ namespace AccountManagement.Controllers
 
         //PUT: UPDATE
         [HttpPut("update/{id}")]
-        public IActionResult Update(int id, [FromBody] CreateClientDTO createClientDto)
+        public IActionResult Update(int id, [FromBody] UpdateClientDTO createClientDto)
         {
-            var clientUpdated = new Clients(createClientDto.FirstName, createClientDto.LastName, createClientDto.Email, createClientDto.Birthdate,
-                createClientDto.Phone, createClientDto.Username, createClientDto.Password);
+            //var clientUpdated = new Clients(createClientDto.FirstName, createClientDto.LastName, createClientDto.Email, createClientDto.Birthdate,
+               // createClientDto.Phone, createClientDto.Username, createClientDto.Password);
 
-            _repository.ClientsRepository.UpdateRecord(id, clientUpdated, out string ErrorMessage);
+            _repository.ClientsRepository.UpdateRecord(id, createClientDto, out string ErrorMessage);
             _repository.ClientsRepository.SaveChanges();
             _logger.LogInfo("Update a record");
 
@@ -82,19 +82,11 @@ namespace AccountManagement.Controllers
         public IActionResult Delete(int id)
         {
             _repository.ClientsRepository.RemoveRecord(id, out bool check);
-            if (check == false)
-            {
-                return NotFound("There is no client with this ID in Database");
-            }
-            else
-            {
-                _repository.ClientsRepository.SaveChanges();
+            _repository.ClientsRepository.SaveChanges();
 
-                _logger.LogInfo("Delete a clients record");
+            _logger.LogInfo("Delete a clients record");
 
-                return Ok("Client deleted from database");
-            }
-            
+            return Ok("Client deleted from database");
         }
 
     }
