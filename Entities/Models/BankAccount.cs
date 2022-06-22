@@ -30,14 +30,14 @@ namespace Entities.Models
 
         public BankAccount() { }
 
-        public BankAccount(string code, string name, int currencyId, decimal balance, int clientId, bool isActive)
+        public BankAccount(string code, string name, int currencyId, decimal balance, int clientId)
         {
             Code = code;
             Name = name;
             CurrencyId = currencyId;
             Balance = balance;
             ClientId = clientId;
-            IsActive = isActive;
+            IsActive = true;
             DateCreated = DateTime.Now;
         }
 

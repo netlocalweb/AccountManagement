@@ -25,7 +25,7 @@ namespace AccountManagement.Controllers
         [HttpPost("create")]
         public IActionResult Create([FromBody] CreateBankAccountDTO createBankAccount)
         {
-            var bankAccount = new BankAccount(createBankAccount.Code, createBankAccount.Name, createBankAccount.CurrencyId, createBankAccount.Balance, createBankAccount.ClientId, createBankAccount.IsActive);
+            var bankAccount = new BankAccount(createBankAccount.Code, createBankAccount.Name, createBankAccount.CurrencyId, createBankAccount.Balance, createBankAccount.ClientId);
 
             _repository.BankAccountRepository.CreateRecord(bankAccount, out string ErrorMessage);
             _repository.BankAccountRepository.SaveChanges();
@@ -67,7 +67,7 @@ namespace AccountManagement.Controllers
         [HttpPut("update/{id}")]
         public IActionResult Update(int id, [FromBody] UpdateBankAccountDTO updateBankAccount)
         {
-            var bankAccount = new BankAccount(updateBankAccount.Code, updateBankAccount.Name, updateBankAccount.CurrencyId, updateBankAccount.Balance, updateBankAccount.ClientId, updateBankAccount.IsActive);
+            var bankAccount = new BankAccount(updateBankAccount.Code, updateBankAccount.Name, updateBankAccount.CurrencyId, updateBankAccount.Balance, updateBankAccount.ClientId);
 
             _repository.BankAccountRepository.UpdateRecord(id, bankAccount, out string ErrorMessage);
             _repository.BankAccountRepository.SaveChanges();

@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using Entities.DTO;
+using Entities.Models;
 using System.Collections.Generic;
 
 namespace Contracts
@@ -10,7 +11,7 @@ namespace Contracts
 
 
         //GETBYID Method Interface
-        Clients GetRecordById(int id);
+        GetClientDTO GetRecordById(int id);
 
 
         //DELETE Method Interface

@@ -9,18 +9,8 @@ namespace Entities.DTO
         public int CurrencyId { get; set; }
         public decimal Balance { get; set; }
         public int ClientId { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime DateCreated { get; set; }
+       
 
-        public CreateBankAccountDTO(string code, string name, int currencyId, decimal balance, int clientId, bool isActive)
-        {
-            Code = code;
-            Name = name;
-            CurrencyId = currencyId;
-            Balance = balance;
-            ClientId = clientId;
-            IsActive = true;
-            DateCreated = DateTime.Now;
-        }
+        
     }
 }

@@ -12,9 +12,8 @@ namespace Entities.DTO
         public int Action { get; set; }
         [Required(ErrorMessage = "Enter Amount")]
         public decimal Amount { get; set; }
-        [Required]
-        public bool IsActive { get; set; }
-        public DateTime DateCreated { get; set; }
+        
+       
 
 
     }

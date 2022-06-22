@@ -15,17 +15,9 @@ namespace Entities.DTO
         public decimal Price { get; set; }
 
 
-        public DateTime DateCreated { get; set; }
+        
 
-        public CreateProductDTO(string name, string shortDescription, string longDescription, int categoryId, decimal price)
-        {
-            Name = name;
-            ShortDescription = shortDescription;
-            LongDescription = longDescription;
-            CategoryId = categoryId;
-            Price = price;
-            DateCreated = DateTime.Now;
-        }
+        
 
 
     }

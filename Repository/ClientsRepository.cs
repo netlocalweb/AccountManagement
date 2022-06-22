@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Entities.DTO;
 using Entities.Models;
 using System;
 using System.Collections.Generic;
@@ -130,15 +131,17 @@ namespace Repository
         //Method GETALL
         public IEnumerable<Clients> GetAllRecords()
         {
-            var testAll = RepositoryContext.Clients;
-            return (IEnumerable<Clients>)testAll;
+            var client = RepositoryContext.Clients;
+            
+            return (IEnumerable<Clients>)client;
 
         }
         //Method GETBYID
-        public Clients GetRecordById(int id)
+        public GetClientDTO GetRecordById(int id)
         {
             var client = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
-            return client;
+            GetClientDTO getClients = new GetClientDTO(client.Id, client.FirstName, client.LastName, client.Email, client.Phone, client.DateCreated, client.DateModified, client.Username);
+            return getClients;
         }
 
         //Method DELETE

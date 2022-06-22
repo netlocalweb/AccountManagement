@@ -23,13 +23,13 @@ namespace Entities.Models
 
         public BankTransaction() { }
 
-        public BankTransaction(int bankAccountId, int action, decimal amount, bool isActive)
+        public BankTransaction(int bankAccountId, int action, decimal amount)
         {
 
             BankAccountId = bankAccountId;
             Action = action;
             Amount = amount;
-            IsActive = isActive;
+            IsActive = true;
             DateCreated = DateTime.Now;
 
         }

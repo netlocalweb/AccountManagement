@@ -25,7 +25,7 @@ namespace AccountManagement.Controllers
         [HttpPost("create")]
         public IActionResult Create([FromBody] CreateBankTransactionDTO transaction)
         {
-            var newTransaction = new BankTransaction(transaction.BankAccountId, transaction.Action, transaction.Amount, transaction.IsActive);
+            var newTransaction = new BankTransaction(transaction.BankAccountId, transaction.Action, transaction.Amount);
             _repository.BankTransactionRepository.CreateRecord(newTransaction, out string ErrorMessage);
             _repository.BankTransactionRepository.SaveChanges();
 
