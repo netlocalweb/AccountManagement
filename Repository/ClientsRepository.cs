@@ -35,7 +35,7 @@ namespace Repository
                 ErrorMessage = errorMessage;
 
             }
-            else if (IsValidEmail(clientDTO, out errorMessage) == false)
+            else if (IsValidEmail(clientDTO.Email, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
 
@@ -67,7 +67,7 @@ namespace Repository
                 ErrorMessage = errorMessage;
 
             }
-            else if (IsValidEmail(clientDTO, out errorMessage) == false)
+            else if (IsValidEmail(clientDTO.Email, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
 
@@ -132,19 +132,37 @@ namespace Repository
         }
 
         //Method GETALL
-        public IEnumerable<Clients> GetAllRecords()
+        public List<GetClientDTO> GetAllRecords()
         {
-            var client = RepositoryContext.Clients;
-            
-            return (IEnumerable<Clients>)client;
-
+            var testAll = RepositoryContext.Clients;
+            List<GetClientDTO> list = new List<GetClientDTO>();
+            foreach (var i in testAll)
+            {
+                GetClientDTO getClient = new GetClientDTO(i.Id, i.FirstName, i.LastName, i.Email, i.Phone, i.DateCreated, i.DateModified, i.Username);
+                list.Add(getClient);
+            }
+            return list;
         }
+
+        
+        
         //Method GETBYID
-        public GetClientDTO GetRecordById(int id)
+        public GetClientDTO GetRecordById(int id, out string ErrorMessage)
         {
+            
             var client = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
-            GetClientDTO getClients = new GetClientDTO(client.Id, client.FirstName, client.LastName, client.Email, client.Phone, client.DateCreated, client.DateModified, client.Username);
-            return getClients;
+            if(client == null)
+            {
+                ErrorMessage = "There is no Client with this ID in Database";
+                return null;
+            }
+            else
+            {
+                ErrorMessage = "Client found";
+                GetClientDTO getClients = new GetClientDTO(client.Id, client.FirstName, client.LastName, client.Email, client.Phone, client.DateCreated, client.DateModified, client.Username);
+                return getClients;
+            }
+            
         }
 
         //Method DELETE
@@ -167,26 +185,46 @@ namespace Repository
         {
             RepositoryContext.SaveChanges();
         }
-
+        
         //Method UPDATE
         public void UpdateRecord(int id, UpdateClientDTO clients, out string ErrorMessage)
         {
-            string errorMessage = string.Empty;
-            var clientCheck = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
-
-            //Email - Phone - Username Validation
             
+            //string errorMessage = string.Empty;
+            var clientCheck = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
+            if(clientCheck == null)
+            {
+                ErrorMessage = "There is no client with this ID in Database";
+            }
+            else if(clientCheck.Email != clients.Email)
+            {
+                if(IsValidEmail(clients.Email, out string emailMessage) == false)
+                {
+                    ErrorMessage = emailMessage;
+                }
+                else
+                {
+                    ErrorMessage = "Client updated";
+                    var client = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
+                    client.FirstName = clients.FirstName;
+                    client.LastName = clients.LastName;
+                    client.Birthdate = clients.Birthdate;
+                    client.Email = clients.Email;
+                    client.Phone = clients.Phone;
+                    client.DateModified = DateTime.Now;
+                }
+            }
+            else
+            {
                 ErrorMessage = "Client updated";
                 var client = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
                 client.FirstName = clients.FirstName;
                 client.LastName = clients.LastName;
                 client.Birthdate = clients.Birthdate;
-                client.Email = clients.Email;
                 client.Phone = clients.Phone;
                 client.DateModified = DateTime.Now;
+            }
             
-
-
         }
 
         //Duplicate Records Validation Method
@@ -196,8 +234,9 @@ namespace Repository
             var email = RepositoryContext.Clients.Where(x => x.Email == client.Email).FirstOrDefault();
             var phone = RepositoryContext.Clients.Where(x => x.Phone == client.Phone).FirstOrDefault();
             var username = RepositoryContext.Clients.Where(x => x.Username == client.Username).FirstOrDefault();
+            
 
-            if (email != null)
+            if (email != null )
             {
                 ErrorMessage = "Email already exists in database! Record NOT added to database.";
                 return false;
@@ -219,9 +258,9 @@ namespace Repository
 
         }
         //Email validation method
-        public bool IsValidEmail(CreateClientDTO client, out string ErrorMessage)
+        public bool IsValidEmail(string clientsEmail, out string ErrorMessage)
         {
-            string email = client.Email;
+            string email = clientsEmail;
             Regex regex = new(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
             Match match = regex.Match(email);
             if (match.Success)

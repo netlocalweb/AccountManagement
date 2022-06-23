@@ -40,11 +40,11 @@ namespace AccountManagement.Controllers
         [HttpGet("getbyid/{id}")]
         public IActionResult GetById(int id)
         {
-            var testStr = _repository.ClientsRepository.GetRecordById(id);
+            var testStr = _repository.ClientsRepository.GetRecordById(id, out string ErrorMessage);
             _logger.LogInfo("Get Client records by id");
             if (testStr == null)
             {
-                return NotFound("There is no user with this ID in Database");
+                return NotFound(ErrorMessage);
             }
             else
             {

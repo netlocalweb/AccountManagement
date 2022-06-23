@@ -7,11 +7,11 @@ namespace Contracts
     public interface IClientsRepository
     {
         //GETALL Method Interface
-        IEnumerable<Clients> GetAllRecords();
+        List<GetClientDTO> GetAllRecords();
 
 
         //GETBYID Method Interface
-        GetClientDTO GetRecordById(int id);
+        GetClientDTO GetRecordById(int id, out string ErrorMessage);
 
 
         //DELETE Method Interface
