@@ -16,6 +16,8 @@ namespace Repository
             RepositoryContext = repositoryContext;
         }
 
+        
+
         //Method CREATE
         public void CreateRecord(BankAccount bankAccount, out string ErrorMessage)
         {
