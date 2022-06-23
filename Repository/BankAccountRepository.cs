@@ -43,16 +43,29 @@ namespace Repository
         //GETALL Method
         public IEnumerable<BankAccount> GetAllRecords()
         {
-            var testAll = RepositoryContext.BankAccounts;
+            var testAll = RepositoryContext.BankAccounts.Where(x => x.IsActive == true);
             return (IEnumerable<BankAccount>)testAll;
         }
         //GetRecordById Method
-        public BankAccount GetRecordById(int id)
+        public BankAccount GetRecordById(int id, out int validation)
         {
             var bankAccount = RepositoryContext.BankAccounts.Where(x => x.Id == id).FirstOrDefault();
-           return bankAccount;
-           
             
+            if(bankAccount == null)
+            {
+                validation = 0;
+                return null;
+            }
+            else if(bankAccount.IsActive == false)
+            {
+                validation = 1;
+                return null;
+            }
+            else
+            {
+                validation = 2;
+                return bankAccount;
+            } 
         }
         //Remove Record Method
         public void RemoveRecord(int id, out bool check)

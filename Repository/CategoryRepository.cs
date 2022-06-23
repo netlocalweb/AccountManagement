@@ -78,17 +78,28 @@ namespace Repository
             {
                 ErrorMessage = "There is no category with this ID in Database";
             }
-            else if (DuplicateValidation(oldCategory, out errorMessage) == false)
-            {
-                ErrorMessage = errorMessage;
-            }
-            else
+            else if (oldCategory.Code == newCategory.Code)
             {
                 ErrorMessage = "Category updated sucefully!";
-                oldCategory.Code = newCategory.Code.ToUpper();
                 oldCategory.Description = newCategory.Description;
                 oldCategory.DateModified = DateTime.Now;
             }
+            else
+            {
+
+                if(DuplicateValidation(newCategory, out errorMessage) == false)
+                {
+                    ErrorMessage = errorMessage;
+                }
+                else
+                {
+                    ErrorMessage = "Category updated sucefully!";
+                    oldCategory.Code = newCategory.Code.ToUpper();
+                    oldCategory.Description = newCategory.Description;
+                    oldCategory.DateModified = DateTime.Now;
+                }
+            }
+                
 
         }
 

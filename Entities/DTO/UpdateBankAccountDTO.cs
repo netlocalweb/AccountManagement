@@ -18,6 +18,7 @@ namespace Entities.DTO
             Name = name;
             CurrencyId = currencyId;
             Balance = balance;
+            ClientId = clientId;
             IsActive = isActive;
             DateModified = DateTime.Now;
         }

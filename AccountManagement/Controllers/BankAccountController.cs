@@ -40,16 +40,22 @@ namespace AccountManagement.Controllers
         [HttpGet("getbyid/{id}")]
         public IActionResult GetById(int id)
         {
-            var testStr = _repository.BankAccountRepository.GetRecordById(id);
+            var testStr = _repository.BankAccountRepository.GetRecordById(id,  out int validation);
             _logger.LogInfo("Get Bank Account record by id");
-            if (testStr == null)
+            if(validation == 0)
             {
-                return NotFound("There is no Bank Account with this ID in Database");
+                return NotFound("Bank Account not found");
+            }
+            else if(validation == 1)
+            {
+                return Ok("Bank Account is inactive");
             }
             else
             {
                 return Ok(testStr);
             }
+                
+            
         }
 
         //GET: GETALL

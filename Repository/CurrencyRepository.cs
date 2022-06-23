@@ -79,18 +79,30 @@ namespace Repository
             if(oldCurrency == null)
             {
                 ErrorMessage = "There is no Currency with this ID in Database";
-            }else if (DuplicateValidation(newCurrency, out errorMessage) == false)
-            {
-                ErrorMessage = errorMessage;
-            }
-            else
+            }else if(newCurrency.Code == oldCurrency.Code)
             {
                 ErrorMessage = "Currency updated sucefully!";
-                oldCurrency.Code = newCurrency.Code.ToUpper();
                 oldCurrency.Description = newCurrency.Description;
                 oldCurrency.ExchangeRate = newCurrency.ExchangeRate;
                 oldCurrency.DateModified = DateTime.Now;
             }
+            else
+            {
+                if (DuplicateValidation(newCurrency, out errorMessage) == false)
+                {
+                    ErrorMessage = errorMessage;
+                }
+                else
+                {
+                    ErrorMessage = "Currency updated sucefully!";
+                    oldCurrency.Code = newCurrency.Code.ToUpper();
+                    oldCurrency.Description = newCurrency.Description;
+                    oldCurrency.ExchangeRate = newCurrency.ExchangeRate;
+                    oldCurrency.DateModified = DateTime.Now;
+                }
+            }
+            
+            
 
         }
 

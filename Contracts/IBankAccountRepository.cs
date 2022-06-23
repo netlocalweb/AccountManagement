@@ -10,7 +10,7 @@ namespace Contracts
 
 
         //GETBYID Method Interface
-        BankAccount GetRecordById(int id);
+        BankAccount GetRecordById(int id, out int validation);
 
 
 
