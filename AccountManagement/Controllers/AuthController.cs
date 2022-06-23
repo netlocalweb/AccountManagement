@@ -72,7 +72,7 @@ namespace AccountManagement.Controllers
                 new Claim(ClaimTypes.Email, client.Email)
             };
 
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("Authenticator Password Token"));
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("AccountManagementTokenKey"));
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
