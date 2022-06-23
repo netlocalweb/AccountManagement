@@ -61,7 +61,7 @@ namespace AccountManagement
             services.AddControllers(config =>
            {
                config.RespectBrowserAcceptHeader = true;
-               config.ReturnHttpNotAcceptable = true;
+               config.ReturnHttpNotAcceptable = true; 
            }).AddNewtonsoftJson();
         }
 
