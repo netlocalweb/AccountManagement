@@ -1,7 +1,10 @@
 ﻿using Contracts;
 using Entities.DTO;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 
 namespace AccountManagement.Controllers
 {
@@ -23,8 +26,11 @@ namespace AccountManagement.Controllers
 
         //POST: CREATE
         [HttpPost("create")]
+        [Authorize]
         public IActionResult Create([FromBody] CreateBankAccountDTO createBankAccount)
         {
+            //int clientId = Convert.ToInt32(User.Claims.First(c => c.Type == "Id").Value);
+            var rrr = HttpContext.User.Claims.First(x => x.Type == "Id").Value;
             var bankAccount = new BankAccount(createBankAccount.Code, createBankAccount.Name, createBankAccount.CurrencyId, createBankAccount.Balance, createBankAccount.ClientId);
 
             _repository.BankAccountRepository.CreateRecord(bankAccount, out string ErrorMessage);

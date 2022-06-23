@@ -3,6 +3,7 @@ using Dapper;
 using Entities;
 using Entities.DTO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Repository
 {
@@ -18,10 +19,12 @@ namespace Repository
         //First CustomAPI
         public IEnumerable<CustomFirstApiDTO> FirstAPI()
         {
-            var query = "Select Clients.FirstName,Clients.LastName,BankAccounts.Code, BankAccounts.Name,Currencies.Description, BankAccounts.Balance From Clients, BankAccounts, Currencies Where BankAccounts.ClientId = Clients.Id AND BankAccounts.CurrencyId = Currencies.Id";
+            var query = "Select Clients.FirstName + ' ' +Clients.LastName as ClientName ,BankAccounts.Code as AccountCode, BankAccounts.Name as AccountName,Currencies.Description as Currency, BankAccounts.Balance as CurrentBalance From Clients, BankAccounts, Currencies Where BankAccounts.ClientId = Clients.Id AND BankAccounts.CurrencyId = Currencies.Id"; 
             using (var connection = _context.CreateConnection())
             {
+                
                 var result = connection.Query<CustomFirstApiDTO>(query);
+                
                 return result;
             }
         }
@@ -29,7 +32,7 @@ namespace Repository
         public IEnumerable<CustomSecondApiDTO> SecondApi(int id)
         {
 
-            var query = "Select BankTransactions.Action, BankTransactions.Amount, BankTransactions.DateCreated From BankTransactions, BankAccounts Where BankTransactions.BankAccountId = BankAccounts.Id AND BankAccounts.Id = @Id Order By BankTransactions.DateCreated ASC";
+            var query = "Select Clients.FirstName + ' ' +Clients.LastName as ClientName ,BankAccounts.Code as AccountCode, BankAccounts.Name as AccountName,Currencies.Description as Currency, BankAccounts.Balance as CurrentBalance From Clients, BankAccounts, Currencies Where BankAccounts.ClientId = Clients.Id AND BankAccounts.CurrencyId = Currencies.Id";
             using (var connection = _context.CreateConnection())
             {
                 var result = connection.Query<CustomSecondApiDTO>(query, new { id });

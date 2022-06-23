@@ -68,7 +68,7 @@ namespace AccountManagement.Controllers
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, client.Username),
-                new Claim(ClaimTypes.NameIdentifier, client.Id.ToString()),
+                new Claim("Id", client.Id.ToString()),
                 new Claim(ClaimTypes.Email, client.Email)
             };
 
