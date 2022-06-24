@@ -29,9 +29,10 @@ namespace AccountManagement.Controllers
         [Authorize]
         public IActionResult Create([FromBody] CreateBankAccountDTO createBankAccount)
         {
-            //int clientId = Convert.ToInt32(User.Claims.First(c => c.Type == "Id").Value);
-            var rrr = HttpContext.User.Claims.First(x => x.Type == "Id").Value;
-            var bankAccount = new BankAccount(createBankAccount.Code, createBankAccount.Name, createBankAccount.CurrencyId, createBankAccount.Balance, createBankAccount.ClientId);
+            
+            var getTokenId = HttpContext.User.Claims.First(x => x.Type == "Id").Value;
+            var getClientId = Int32.Parse(getTokenId);
+            var bankAccount = new BankAccount(createBankAccount.Code, createBankAccount.Name, createBankAccount.CurrencyId, createBankAccount.Balance, getClientId);
 
             _repository.BankAccountRepository.CreateRecord(bankAccount, out string ErrorMessage);
             _repository.BankAccountRepository.SaveChanges();
