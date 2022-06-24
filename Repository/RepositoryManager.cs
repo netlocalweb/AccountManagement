@@ -12,6 +12,7 @@ namespace Repository
         private IProductRepository _productRepository;
         private IBankAccountRepository _bankAccountRepository;
         private IBankTransactionRepository _bankTransactionRepository;
+        
 
 
 
@@ -88,6 +89,7 @@ namespace Repository
             }
         }
 
+        
 
     }
 }

@@ -26,20 +26,47 @@ namespace AccountManagement.Controllers
 
         //POST: CREATE
         [HttpPost("create")]
-        [Authorize]
+        //[Authorize]
         public IActionResult Create([FromBody] CreateBankAccountDTO createBankAccount)
         {
+            var getTokenId = "";
+            try
+            {
+                getTokenId = HttpContext.User.Claims.First(x => x.Type == "Id").Value;
+                var getClientId = Int32.Parse(getTokenId);
+                var bankAccount = new BankAccount(createBankAccount.Code, createBankAccount.Name, createBankAccount.CurrencyId, createBankAccount.Balance, getClientId);
+
+                _repository.BankAccountRepository.CreateRecord(bankAccount, out string ErrorMessage);
+                _repository.BankAccountRepository.SaveChanges();
+
+                _logger.LogInfo(ErrorMessage);
+
+                return Ok(ErrorMessage);
+            }
+            catch (Exception)
+            {
+                return BadRequest("You need to log in first in order to create a Bank Account");
+            }
             
-            var getTokenId = HttpContext.User.Claims.First(x => x.Type == "Id").Value;
-            var getClientId = Int32.Parse(getTokenId);
-            var bankAccount = new BankAccount(createBankAccount.Code, createBankAccount.Name, createBankAccount.CurrencyId, createBankAccount.Balance, getClientId);
+            /*
+            if (getTokenId == null)
+            {
+                return BadRequest("You need to log in first in order to create a Bank Account");
+            }
+            else
+            {
+                var getClientId = Int32.Parse(getTokenId);
+                var bankAccount = new BankAccount(createBankAccount.Code, createBankAccount.Name, createBankAccount.CurrencyId, createBankAccount.Balance, getClientId);
 
-            _repository.BankAccountRepository.CreateRecord(bankAccount, out string ErrorMessage);
-            _repository.BankAccountRepository.SaveChanges();
+                _repository.BankAccountRepository.CreateRecord(bankAccount, out string ErrorMessage);
+                _repository.BankAccountRepository.SaveChanges();
 
-            _logger.LogInfo(ErrorMessage);
+                _logger.LogInfo(ErrorMessage);
 
-            return Ok(ErrorMessage);
+                return Ok(ErrorMessage);
+            }
+            */
+            
 
         }
 

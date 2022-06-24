@@ -20,13 +20,11 @@ namespace AccountManagement.Controllers
         private readonly ILoggerManager _logger;
         private readonly IDapperRepository _dapperRepository;
 
-
         public AuthController(IRepositoryManager repository, ILoggerManager logger, IDapperRepository dapperRepository)
         {
             _repository = repository;
             _logger = logger;
             _dapperRepository = dapperRepository;
-
         }
 
         //POST: Register
@@ -42,7 +40,6 @@ namespace AccountManagement.Controllers
             _logger.LogInfo("Registerin a new client");
 
             return Ok(ErrorMessage);
-
         }
 
         //POST: Login
