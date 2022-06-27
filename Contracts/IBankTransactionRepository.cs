@@ -6,7 +6,7 @@ namespace Contracts
     public interface IBankTransactionRepository
     {
         //GETALL Method Interface
-        IEnumerable<BankTransaction> GetAllRecords();
+        IEnumerable<BankTransaction> GetAllRecords(int pageNumber, int pageSize, out int totalRecords);
 
 
         //GETBYID Method Interface
