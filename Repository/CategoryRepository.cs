@@ -34,10 +34,11 @@ namespace Repository
         }
 
         //Method GETALL
-        public IEnumerable<Category> GetAllRecords()
+        public IEnumerable<Category> GetAllRecords(int pageNumber, int pageSize, out int totalRecords)
         {
-            
-            var testAll = RepositoryContext.Categories;
+            int skipRecords = (pageNumber -1) * pageSize;
+            totalRecords = RepositoryContext.Categories.Count();
+            var testAll = RepositoryContext.Categories.Skip(skipRecords).Take(pageSize);
             return (IEnumerable<Category>)testAll;
 
         }

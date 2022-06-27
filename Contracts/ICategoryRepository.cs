@@ -6,7 +6,7 @@ namespace Contracts
     public interface ICategoryRepository
     {
         //GETALL Method Interface
-        IEnumerable<Category> GetAllRecords();
+        IEnumerable<Category> GetAllRecords(int pageNumber, int pageSize, out int totalRecords);
 
 
         //GETBYID Method Interface

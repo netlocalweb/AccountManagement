@@ -2,6 +2,7 @@
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace AccountManagement.Controllers
 {
@@ -53,14 +54,15 @@ namespace AccountManagement.Controllers
         }
 
         //GET: GETALL
-        [HttpGet("getall")]
-        public IActionResult GetAll()
+        [HttpPost("getall")]
+        public IActionResult GetAll([FromBody] PagingParameter pagingParameter)
         {
-            var testStr = _repository.CategoryRepository.GetAllRecords();
+            var testStr = _repository.CategoryRepository.GetAllRecords(pagingParameter.PageNumber, pagingParameter.PageSize, out int totalRecords);
+            var pageInfo = new Pager<IEnumerable<Category>>(totalRecords, pagingParameter.PageNumber, pagingParameter.PageSize, data: testStr);
 
             _logger.LogInfo("Get all Category records");
 
-            return Ok(testStr);
+            return Ok(pageInfo);
         }
 
         //PUT: UPDATE
