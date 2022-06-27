@@ -6,7 +6,7 @@ namespace Contracts
     public interface IProductRepository
     {
         //GETALL Method Interface
-        IEnumerable<Product> GetAllRecords();
+        IEnumerable<Product> GetAllRecords(int pageNumber, int pageSize, out int totalRecords);
 
         //GETBYID Method Interface
         Product GetRecordById(int id);

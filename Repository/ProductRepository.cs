@@ -35,9 +35,11 @@ namespace Repository
 
 
         //Method GETALL
-        public IEnumerable<Product> GetAllRecords()
+        public IEnumerable<Product> GetAllRecords(int pageNumber, int pageSize, out int totalRecords)
         {
-            var testAll = RepositoryContext.Products;
+            int skipRecords = (pageNumber - 1) * pageSize;
+            totalRecords = RepositoryContext.Products.Count();
+            var testAll = RepositoryContext.Products.Skip(skipRecords).Take(pageSize);
             return (IEnumerable<Product>)testAll;
 
         }
