@@ -4,6 +4,7 @@ using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AccountManagement.Controllers
@@ -93,14 +94,15 @@ namespace AccountManagement.Controllers
         }
 
         //GET: GETALL
-        [HttpGet("getall")]
-        public IActionResult GetAll()
+        [HttpPost("getall")]
+        public IActionResult GetAll([FromBody] PagingParameter pagingParameter)
         {
-            var testStr = _repository.BankAccountRepository.GetAllRecords();
+            var testStr = _repository.BankAccountRepository.GetAllRecords(pagingParameter.PageNumber, pagingParameter.PageSize, out int totalRecords);
+            var pageInfo = new Pager<IEnumerable<BankAccount>>(totalRecords, pagingParameter.PageNumber, pagingParameter.PageSize, data: testStr);
 
             _logger.LogInfo("Get all Bank Account records");
 
-            return Ok(testStr);
+            return Ok(pageInfo);
         }
 
         //PUT: UPDATE

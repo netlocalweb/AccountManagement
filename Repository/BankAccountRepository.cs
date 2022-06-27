@@ -43,9 +43,11 @@ namespace Repository
 
         }
         //GETALL Method
-        public IEnumerable<BankAccount> GetAllRecords()
+        public IEnumerable<BankAccount> GetAllRecords(int pageNumber, int pageSize, out int totalRecords)
         {
-            var testAll = RepositoryContext.BankAccounts.Where(x => x.IsActive == true);
+            int skipRecords = (pageNumber - 1) * pageSize;
+            totalRecords = RepositoryContext.BankAccounts.Count();
+            var testAll = RepositoryContext.BankAccounts.Where(x => x.IsActive == true).Skip(skipRecords).Take(pageSize);
             return (IEnumerable<BankAccount>)testAll;
         }
         //GetRecordById Method
