@@ -2,6 +2,7 @@
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace AccountManagement.Controllers
 {
@@ -52,14 +53,15 @@ namespace AccountManagement.Controllers
         }
 
         //GET: GETALL
-        [HttpGet("getall")]
-        public IActionResult GetAll()
+        [HttpPost("getall")]
+        public IActionResult GetAll([FromBody] PagingParameter pagingParameter)
         {
-            var testStr = _repository.CurrencyRepository.GetAllRecords();
+            var testStr = _repository.CurrencyRepository.GetAllRecords(pagingParameter.PageNumber, pagingParameter.PageSize, out int totalRecords);
+            var pageInfo = new Pager<IEnumerable<Currency>>(totalRecords, pagingParameter.PageNumber, pagingParameter.PageSize, data: testStr);
 
             _logger.LogInfo("Get all Currencies records");
 
-            return Ok(testStr);
+            return Ok(pageInfo);
         }
 
         //PUT: UPDATE

@@ -6,7 +6,7 @@ namespace Contracts
     public interface ICurrencyRepository
     {
         //GETALL Method Interface
-        IEnumerable<Currency> GetAllRecords();
+        IEnumerable<Currency> GetAllRecords(int pageNumber, int pageSize, out int totalRecords);
 
 
         //GETBYID Method Interface
