@@ -7,7 +7,7 @@ namespace Contracts
     public interface IClientsRepository
     {
         //GETALL Method Interface
-        List<GetClientDTO> GetAllRecords();
+        List<GetClientDTO> GetAllRecords(int pageNumber, int pageSize, out int totalRecords);
 
 
         //GETBYID Method Interface

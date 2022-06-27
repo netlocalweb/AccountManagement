@@ -5,6 +5,7 @@ using Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
@@ -33,7 +34,6 @@ namespace Repository
             if (DuplicateValidation(clientDTO, out errorMessage) == false)
             {
                 ErrorMessage = errorMessage;
-
             }
             else if (IsValidEmail(clientDTO.Email, out errorMessage) == false)
             {
@@ -46,7 +46,7 @@ namespace Repository
             }
             else
             {
-                
+
                 CreatePasswordHash(clientDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
                 Clients clients = new Clients(clientDTO.FirstName, clientDTO.LastName, clientDTO.Email, clientDTO.Birthdate, clientDTO.Phone, clientDTO.Username, passwordHash, passwordSalt);
@@ -78,7 +78,7 @@ namespace Repository
             }
             else
             {
-                
+
                 CreatePasswordHash(clientDTO.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
                 Clients clients = new Clients(clientDTO.FirstName, clientDTO.LastName, clientDTO.Email, clientDTO.Birthdate, clientDTO.Phone, clientDTO.Username, passwordHash, passwordSalt);
@@ -132,9 +132,13 @@ namespace Repository
         }
 
         //Method GETALL
-        public List<GetClientDTO> GetAllRecords()
+        public List<GetClientDTO> GetAllRecords(int pageNumber, int pageSize, out int totalRecords)
         {
-            var testAll = RepositoryContext.Clients;
+            //pageNumber = 0;
+            //pageSize = 10;
+            int skipRecords = (pageNumber - 1) * pageSize;
+            totalRecords = RepositoryContext.Clients.Count();
+            var testAll = RepositoryContext.Clients.Skip(skipRecords).Take(pageSize);
             List<GetClientDTO> list = new List<GetClientDTO>();
             foreach (var i in testAll)
             {
@@ -144,14 +148,14 @@ namespace Repository
             return list;
         }
 
-        
-        
+
+
         //Method GETBYID
         public GetClientDTO GetRecordById(int id, out string ErrorMessage)
         {
-            
+
             var client = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
-            if(client == null)
+            if (client == null)
             {
                 ErrorMessage = "There is no Client with this ID in Database";
                 return null;
@@ -162,14 +166,13 @@ namespace Repository
                 GetClientDTO getClients = new GetClientDTO(client.Id, client.FirstName, client.LastName, client.Email, client.Phone, client.DateCreated, client.DateModified, client.Username);
                 return getClients;
             }
-            
         }
 
         //Method DELETE
         public void RemoveRecord(int id, out bool check)
         {
             var client = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
-            if(client == null)
+            if (client == null)
             {
                 check = false;
             }
@@ -178,27 +181,27 @@ namespace Repository
                 check = true;
                 RepositoryContext.Clients.Remove(client);
             }
-            
+
         }
 
         public void SaveChanges()
         {
             RepositoryContext.SaveChanges();
         }
-        
+
         //Method UPDATE
         public void UpdateRecord(int id, UpdateClientDTO clients, out string ErrorMessage)
         {
-            
+
             //string errorMessage = string.Empty;
             var clientCheck = RepositoryContext.Clients.Where(x => x.Id == id).FirstOrDefault();
-            if(clientCheck == null)
+            if (clientCheck == null)
             {
                 ErrorMessage = "There is no client with this ID in Database";
             }
-            else if(clientCheck.Email != clients.Email)
+            else if (clientCheck.Email != clients.Email)
             {
-                if(IsValidEmail(clients.Email, out string emailMessage) == false)
+                if (IsValidEmail(clients.Email, out string emailMessage) == false)
                 {
                     ErrorMessage = emailMessage;
                 }
@@ -224,7 +227,7 @@ namespace Repository
                 client.Phone = clients.Phone;
                 client.DateModified = DateTime.Now;
             }
-            
+
         }
 
         //Duplicate Records Validation Method
@@ -234,9 +237,9 @@ namespace Repository
             var email = RepositoryContext.Clients.Where(x => x.Email == client.Email).FirstOrDefault();
             var phone = RepositoryContext.Clients.Where(x => x.Phone == client.Phone).FirstOrDefault();
             var username = RepositoryContext.Clients.Where(x => x.Username == client.Username).FirstOrDefault();
-            
 
-            if (email != null )
+
+            if (email != null)
             {
                 ErrorMessage = "Email already exists in database! Record NOT added to database.";
                 return false;

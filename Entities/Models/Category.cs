@@ -21,11 +21,9 @@ namespace Entities.Models
 
         public Category(string code, string description)
         {
-
             Code = code.ToUpper();
             Description = description;
             DateCreated = DateTime.Now;
-
         }
     }
 }

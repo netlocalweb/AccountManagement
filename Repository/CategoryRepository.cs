@@ -36,6 +36,7 @@ namespace Repository
         //Method GETALL
         public IEnumerable<Category> GetAllRecords()
         {
+            
             var testAll = RepositoryContext.Categories;
             return (IEnumerable<Category>)testAll;
 

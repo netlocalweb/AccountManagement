@@ -2,6 +2,7 @@
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace AccountManagement.Controllers
 {
@@ -12,7 +13,6 @@ namespace AccountManagement.Controllers
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IDapperRepository _dapperRepository;
-
         public ClientsController(IRepositoryManager repository, ILoggerManager logger, IDapperRepository dapperRepository)
         {
             _repository = repository;
@@ -25,7 +25,7 @@ namespace AccountManagement.Controllers
         public IActionResult Create([FromBody] CreateClientDTO createClientDto)
         {
             //var client = new Clients(createClientDto.FirstName, createClientDto.LastName, createClientDto.Email, createClientDto.Birthdate,
-              //  createClientDto.Phone, createClientDto.Username, createClientDto.Password);
+            //  createClientDto.Phone, createClientDto.Username, createClientDto.Password);
 
             _repository.ClientsRepository.CreateRecord(createClientDto, out string ErrorMessage);
             _repository.ClientsRepository.SaveChanges();
@@ -53,14 +53,15 @@ namespace AccountManagement.Controllers
         }
 
         //GET: GETALL
-        [HttpGet("getall")]
-        public IActionResult GetAll()
+        [HttpPost("getall")]
+        public IActionResult GetAll([FromBody] PagingParameter pagingParameter)
         {
-            var testStr = _repository.ClientsRepository.GetAllRecords();
+            var testStr = _repository.ClientsRepository.GetAllRecords(pagingParameter.PageNumber, pagingParameter.PageSize, out int totalRecords);
+            var pageInfo = new Pager<List<GetClientDTO>>(totalRecords, pagingParameter.PageNumber,pagingParameter.PageSize, data: testStr);
 
             _logger.LogInfo("Get all Clients records");
 
-            return Ok(testStr);
+            return Ok(pageInfo);
         }
 
         //PUT: UPDATE
@@ -68,7 +69,7 @@ namespace AccountManagement.Controllers
         public IActionResult Update(int id, [FromBody] UpdateClientDTO createClientDto)
         {
             //var clientUpdated = new Clients(createClientDto.FirstName, createClientDto.LastName, createClientDto.Email, createClientDto.Birthdate,
-               // createClientDto.Phone, createClientDto.Username, createClientDto.Password);
+            // createClientDto.Phone, createClientDto.Username, createClientDto.Password);
 
             _repository.ClientsRepository.UpdateRecord(id, createClientDto, out string ErrorMessage);
             _repository.ClientsRepository.SaveChanges();
