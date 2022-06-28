@@ -39,6 +39,8 @@ namespace AccountManagement.Controllers
         {
             
             var testStr = _dapperRepository.SecondApi(id);
+            var checkBankAccountId = _repository.BankAccountRepository.GetRecordById(id,out int validation);
+            
             if(testStr != null && testStr.GetEnumerator().MoveNext())
             {
                 _logger.LogInfo("Second Internship Custom API");
@@ -46,9 +48,12 @@ namespace AccountManagement.Controllers
                 return Ok(testStr);
                 
             }
-            else
+            else if(checkBankAccountId == null) {
+
+                return NotFound("There is no bank account that matches this ID");
+            }else
             {
-                return NotFound("There is no bank account that matches your id or there are no bank transactions for this bank account!");
+                return NotFound("There are no bank transactions for this bank account!");
             }
            
         }
@@ -58,17 +63,20 @@ namespace AccountManagement.Controllers
         public IActionResult Third(int id)
         {
             var testStr = _dapperRepository.ThirdApi(id);
-            
+            var checkClientId = _repository.ClientsRepository.GetRecordById(id, out string ErrorMessage);
             if (testStr != null && testStr.GetEnumerator().MoveNext())
             {
-                 _logger.LogInfo("Third Internship Custom API");
+                _logger.LogInfo("Third Internship Custom API");
 
-                 return Ok(testStr);
+                return Ok(testStr);
 
+            } else if (checkClientId == null)
+            {
+                return NotFound(ErrorMessage);
             }
             else
             {
-                return NotFound("There is no Client that matches your id or there are no bank accounts for this client yet!");
+                return NotFound("There are no bank accounts for this client yet!");
             }
         }
 
@@ -77,21 +85,21 @@ namespace AccountManagement.Controllers
         public IActionResult Fourth(int id)
         {
             var testStr = _dapperRepository.FourthAPI(id);
-
+            var checkCategory = _repository.CategoryRepository.GetRecordById(id);
             if (testStr != null && testStr.GetEnumerator().MoveNext())
             {
                 _logger.LogInfo("Forth Internship Custom API");
 
                 return Ok(testStr);
 
+            }else if(checkCategory == null)
+            {
+                return NotFound("There is no category with this ID");
             }
             else
             {
-                return NotFound("There is no Category that matches your id or there are no Products for this Category yet!");
+                return NotFound("There are no Products for this Category yet!");
             }
         }
-
-
-
     }
 }

@@ -19,10 +19,10 @@ namespace Repository
         //First CustomAPI
         public IEnumerable<CustomFirstApiDTO> FirstAPI()
         {
-            var query = "Select Clients.FirstName + ' ' +Clients.LastName as ClientName ,BankAccounts.Code as AccountCode, BankAccounts.Name as AccountName,Currencies.Description as Currency, BankAccounts.Balance as CurrentBalance From Clients, BankAccounts, Currencies Where BankAccounts.ClientId = Clients.Id AND BankAccounts.CurrencyId = Currencies.Id"; 
+            var query = "Select Clients.FirstName + ' ' +Clients.LastName as ClientName ,BankAccounts.Code as AccountCode, BankAccounts.Name as AccountName,Currencies.Description as Currency, BankAccounts.Balance as CurrentBalance From Clients, BankAccounts, Currencies Where BankAccounts.ClientId = Clients.Id AND BankAccounts.CurrencyId = Currencies.Id";
+            
             using (var connection = _context.CreateConnection())
             {
-                
                 var result = connection.Query<CustomFirstApiDTO>(query);
                 
                 return result;
@@ -36,11 +36,9 @@ namespace Repository
             using (var connection = _context.CreateConnection())
             {
                 var result = connection.Query<CustomSecondApiDTO>(query, new { id });
+                                              
                 return result;
             }
-            
-
-
         }
         //Third CustomAPI
         public IEnumerable<CustomThirdApiDTO> ThirdApi(int id)
