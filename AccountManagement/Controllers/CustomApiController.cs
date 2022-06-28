@@ -1,4 +1,6 @@
 ﻿using Contracts;
+using Entities;
+using Entities.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountManagement.Controllers
@@ -35,11 +37,20 @@ namespace AccountManagement.Controllers
         [HttpGet("SecondAPI")]
         public IActionResult Second(int id)
         {
+            
             var testStr = _dapperRepository.SecondApi(id);
+            if(testStr != null && testStr.GetEnumerator().MoveNext())
+            {
+                _logger.LogInfo("Second Internship Custom API");
 
-            _logger.LogInfo("Second Internship Custom API");
-
-            return Ok(testStr);
+                return Ok(testStr);
+                
+            }
+            else
+            {
+                return NotFound("There is no bank account that matches your id or there are no bank transactions for this bank account!");
+            }
+           
         }
 
         //GET: THIRDAPI
@@ -47,10 +58,18 @@ namespace AccountManagement.Controllers
         public IActionResult Third(int id)
         {
             var testStr = _dapperRepository.ThirdApi(id);
+            
+            if (testStr != null && testStr.GetEnumerator().MoveNext())
+            {
+                 _logger.LogInfo("Third Internship Custom API");
 
-            _logger.LogInfo("Third Internship Custom API");
+                 return Ok(testStr);
 
-            return Ok(testStr);
+            }
+            else
+            {
+                return NotFound("There is no Client that matches your id or there are no bank accounts for this client yet!");
+            }
         }
 
         //GET: FOURTHAPI
@@ -59,9 +78,17 @@ namespace AccountManagement.Controllers
         {
             var testStr = _dapperRepository.FourthAPI(id);
 
-            _logger.LogInfo("Fourth Internship Custom API");
+            if (testStr != null && testStr.GetEnumerator().MoveNext())
+            {
+                _logger.LogInfo("Forth Internship Custom API");
 
-            return Ok(testStr);
+                return Ok(testStr);
+
+            }
+            else
+            {
+                return NotFound("There is no Category that matches your id or there are no Products for this Category yet!");
+            }
         }
 
 

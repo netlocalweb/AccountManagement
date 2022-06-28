@@ -60,11 +60,17 @@ namespace AccountManagement.Controllers
         public IActionResult GetAll([FromBody] PagingParameter pagingParameter)
         {
             var testStr = _repository.ProductRepository.GetAllRecords(pagingParameter.PageNumber, pagingParameter.PageSize, out int totalRecords);
-            var pagInfo = new Pager<IEnumerable<Product>>(totalRecords, pagingParameter.PageNumber, pagingParameter.PageSize, data: testStr);
+            var pageInfo = new Pager<IEnumerable<Product>>(totalRecords, pagingParameter.PageNumber, pagingParameter.PageSize, data: testStr);
+            if (pagingParameter.PageNumber > pageInfo.TotalPages)
+            {
+                return BadRequest("The records you are requesting have less pages than your requested page number!");
+            }
+            else
+            {
+                _logger.LogInfo("Get all Category records");
 
-            _logger.LogInfo("Get all Category records");
-
-            return Ok(pagInfo);
+                return Ok(pageInfo);
+            }
         }
 
         //PUT: UPDATE
@@ -97,9 +103,9 @@ namespace AccountManagement.Controllers
 
                 return Ok("Category deleted from database.");
             }
-            
-            
-            
+
+
+
         }
 
         [HttpPost("uploadImageWithId/{id}")]
@@ -107,7 +113,7 @@ namespace AccountManagement.Controllers
         {
 
             var productObj = _repository.ProductRepository.GetRecordById(id);
-            if(productObj == null)
+            if (productObj == null)
             {
                 return NotFound("There is no Product with this ID in Database");
             }
@@ -126,7 +132,7 @@ namespace AccountManagement.Controllers
                 _logger.LogInfo("Product image added sucefully!");
                 return Ok("Product image added sucefully!");
             }
-            
+
         }
 
         //GET: GETBYID
@@ -134,7 +140,7 @@ namespace AccountManagement.Controllers
         public IActionResult GetImage(int id)
         {
             var productObj = _repository.ProductRepository.GetRecordById(id);
-            if( productObj == null)
+            if (productObj == null)
             {
                 return NotFound("There is no Product with this ID in Database");
             }
@@ -143,7 +149,7 @@ namespace AccountManagement.Controllers
                 _logger.LogInfo("Get Category records by id");
                 return Ok(productObj.Image);
             }
-            
+
         }
 
 

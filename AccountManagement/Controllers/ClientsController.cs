@@ -58,10 +58,16 @@ namespace AccountManagement.Controllers
         {
             var testStr = _repository.ClientsRepository.GetAllRecords(pagingParameter.PageNumber, pagingParameter.PageSize, out int totalRecords);
             var pageInfo = new Pager<List<GetClientDTO>>(totalRecords, pagingParameter.PageNumber,pagingParameter.PageSize, data: testStr);
+            if (pagingParameter.PageNumber > pageInfo.TotalPages)
+            {
+                return BadRequest("The records you are requesting have less pages than your requested page number!");
+            }
+            else
+            {
+                _logger.LogInfo("Get all Category records");
 
-            _logger.LogInfo("Get all Clients records");
-
-            return Ok(pageInfo);
+                return Ok(pageInfo);
+            }
         }
 
         //PUT: UPDATE

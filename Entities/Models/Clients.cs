@@ -23,7 +23,6 @@ namespace Entities.Models
         public DateTime? DateModified { get; set; }
         [Required(ErrorMessage = "Enter Username")]
         public string Username { get; set; }
-        
 
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
@@ -38,16 +37,13 @@ namespace Entities.Models
             this.FirstName = FirstName;
             this.LastName = LastName;
             this.Email = Email;
-            this.Birthdate = Birthdate;
+            this.Birthdate = Birthdate.Date;
             this.Phone = Phone;
             this.DateCreated = DateTime.Now;
             this.Username = Username;
-            
             this.PasswordHash = PasswordHash;
             this.PasswordSalt = PasswordSalt;
 
         }
-
-
     }
 }
