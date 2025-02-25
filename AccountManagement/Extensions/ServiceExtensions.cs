@@ -1,16 +1,8 @@
 ﻿using Contracts;
 using Entities;
 using LoggerService;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Repository;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 
 namespace AccountManagement.Extensions
 {
@@ -41,12 +33,7 @@ namespace AccountManagement.Extensions
         public static void ConfigureDapperContext(this IServiceCollection services) =>
             services.AddSingleton<DapperContext>();
 
-        public static void ConfigureRepositoryManager(this IServiceCollection services) =>
-           services.AddScoped<IRepositoryManager, RepositoryManager>();
-
-        public static void ConfigureDapperRepository(this IServiceCollection services) =>
-            services.AddScoped<IDapperRepository, DapperRepository>();
-
+       
         public static void ConfigureSwagger(this IServiceCollection services)
         {
             services.AddSwaggerGen(s =>

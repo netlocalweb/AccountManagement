@@ -1,26 +1,50 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using AccountManagement;
+using AccountManagement.Extensions;
+using Contracts;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.OpenApi.Models;
+using Repository;
+using AutoMapper; 
 
-namespace AccountManagement
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.ConfigureCors();
+builder.Services.ConfigureIISIntegration();
+builder.Services.ConfigureLoggerService();
+builder.Services.ConfigureSqlContext(builder.Configuration);
+builder.Services.ConfigureDapperContext();
+
+builder.Services.ConfigureSwagger();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IBankAccountRepository, BankAccountRepository>();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    public class Program
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
     {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Account Management API v1");
+        c.RoutePrefix = "swagger";
+    });
 }
+
+app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
+
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
