@@ -11,19 +11,19 @@ namespace AccountManagement.Controllers
     [ApiController]
     public class BankAccountController : ControllerBase
     {
-        private readonly IBankAccountRepository _bankAccountRepository;
+        private readonly IBankAccountRepository _bankAcc;
         private readonly IMapper _mapper;
 
         public BankAccountController(IBankAccountRepository bankAccountRepository, IMapper mapper)
         {
-            _bankAccountRepository = bankAccountRepository;
+            _bankAcc = bankAccountRepository;
             _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult GetAllBankAccounts()
         {
-            var bankAccounts = _bankAccountRepository.FindAll();
+            var bankAccounts = _bankAcc.FindAll();
             var bankAccountDTOs = _mapper.Map<IEnumerable<BankAccountDTO>>(bankAccounts);
             return Ok(bankAccountDTOs);
         }
@@ -31,7 +31,7 @@ namespace AccountManagement.Controllers
         [HttpGet("{id}")]
         public IActionResult GetBankAccountById(int id)
         {
-            var bankAccount = _bankAccountRepository.FindById(id);
+            var bankAccount = _bankAcc.FindById(id);
             if (bankAccount == null)
             {
                 return NotFound();
@@ -50,7 +50,7 @@ namespace AccountManagement.Controllers
             }
 
             var bankAccountEntity = _mapper.Map<BankAccount>(bankAccountDTO);
-            _bankAccountRepository.Create(bankAccountEntity);
+            _bankAcc.Create(bankAccountEntity);
 
             var createdAccountDTO = _mapper.Map<BankAccountDTO>(bankAccountEntity);
             return CreatedAtAction(nameof(GetBankAccountById), new { id = createdAccountDTO.Id }, createdAccountDTO);
@@ -64,14 +64,14 @@ namespace AccountManagement.Controllers
                 return BadRequest(ModelState);
             }
 
-            var bankAccount = _bankAccountRepository.FindById(id);
+            var bankAccount = _bankAcc.FindById(id);
             if (bankAccount == null)
             {
                 return NotFound();
             }
 
             _mapper.Map(bankAccountDTO, bankAccount);
-            _bankAccountRepository.Update(bankAccount);
+            _bankAcc.Update(bankAccount);
 
             return NoContent();
         }
@@ -79,13 +79,13 @@ namespace AccountManagement.Controllers
         [HttpDelete("{id}")]
         public IActionResult SoftDeleteBankAccount(int id)
         {
-            var bankAccount = _bankAccountRepository.FindById(id);
+            var bankAccount = _bankAcc.FindById(id);
             if (bankAccount == null)
             {
                 return NotFound();
             }
 
-            _bankAccountRepository.SoftDelete(bankAccount);
+            _bankAcc.SoftDelete(bankAccount);
             return NoContent();
         }
     }

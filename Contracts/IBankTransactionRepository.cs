@@ -9,6 +9,5 @@ namespace Contracts
 {
     public interface IBankTransactionRepository : IRepositoryBase<BankTransaction>
     {
-        void SoftDelete(BankTransaction entity);
     }
 }

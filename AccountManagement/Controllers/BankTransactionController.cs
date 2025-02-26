@@ -3,6 +3,7 @@ using Contracts;
 using Entities.DTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
 namespace AccountManagement.Controllers
@@ -11,19 +12,24 @@ namespace AccountManagement.Controllers
     [ApiController]
     public class BankTransactionController : ControllerBase
     {
-        private readonly IBankTransactionRepository _bankTransactionRepository;
-        private readonly IMapper _mapper; 
+        private readonly IBankTransactionRepository _bankTrans;
+        private readonly IBankAccountRepository _bankAcc; 
+        private readonly IMapper _mapper;
 
-        public BankTransactionController(IBankTransactionRepository bankTransactionRepository, IMapper mapper)
+        public BankTransactionController(
+            IBankTransactionRepository bankTrans,
+            IBankAccountRepository bankAcc,
+            IMapper mapper)
         {
-            _bankTransactionRepository = bankTransactionRepository;
+            _bankTrans = bankTrans;
+            _bankAcc = bankAcc;
             _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult GetAllBankTransactions()
         {
-            var bankTransactions = _bankTransactionRepository.FindAll();
+            var bankTransactions = _bankTrans.FindAll();
             var bankTransactionDTOs = _mapper.Map<IEnumerable<BankTransactionDTO>>(bankTransactions);
             return Ok(bankTransactionDTOs);
         }
@@ -31,7 +37,7 @@ namespace AccountManagement.Controllers
         [HttpGet("{id}")]
         public IActionResult GetBankTransactionById(int id)
         {
-            var bankTransaction = _bankTransactionRepository.FindById(id);
+            var bankTransaction = _bankTrans.FindById(id);
             if (bankTransaction == null)
             {
                 return NotFound();
@@ -50,43 +56,35 @@ namespace AccountManagement.Controllers
             }
 
             var bankTransactionEntity = _mapper.Map<BankTransaction>(bankTransactionDTO);
-            _bankTransactionRepository.Create(bankTransactionEntity);
 
+            var bankAccount = _bankAcc.FindById(bankTransactionEntity.BankAccountId);
+            if (bankAccount == null)
+            {
+                return NotFound($"Bank account with ID {bankTransactionEntity.BankAccountId} not found.");
+            }
+
+            // updating the bank account balance
+            if (bankTransactionEntity.Action == 1) // Deposit
+            {
+                bankAccount.Balance += bankTransactionEntity.Amount;
+            }
+            else if (bankTransactionEntity.Action == 2) // Withdrawal
+            {
+                if (bankAccount.Balance < bankTransactionEntity.Amount)
+                {
+                    return BadRequest("Insufficient balance for withdrawal.");
+                }
+                bankAccount.Balance -= bankTransactionEntity.Amount;
+            }
+            else
+            {
+                return BadRequest("Invalid action specified.");
+            }
+            _bankAcc.Update(bankAccount);
+
+            _bankTrans.Create(bankTransactionEntity);
             var createdTransactionDTO = _mapper.Map<BankTransactionDTO>(bankTransactionEntity);
             return CreatedAtAction(nameof(GetBankTransactionById), new { id = createdTransactionDTO.Id }, createdTransactionDTO);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult UpdateBankTransaction(int id, [FromBody] BankTransactionDTO bankTransactionDTO)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var bankTransaction = _bankTransactionRepository.FindById(id);
-            if (bankTransaction == null)
-            {
-                return NotFound();
-            }
-
-            _mapper.Map(bankTransactionDTO, bankTransaction);
-            _bankTransactionRepository.Update(bankTransaction);
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult SoftDeleteBankTransaction(int id)
-        {
-            var bankTransaction = _bankTransactionRepository.FindById(id);
-            if (bankTransaction == null)
-            {
-                return NotFound();
-            }
-
-            _bankTransactionRepository.SoftDelete(bankTransaction);
-            return NoContent();
         }
     }
 }

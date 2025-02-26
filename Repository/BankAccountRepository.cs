@@ -49,10 +49,9 @@ namespace Repository
         {
             var existingBankAccount = _repositoryContext.BankAccounts.Find(entity.Id);
 
-            // Update the DateModified
-            existingBankAccount.DateModified = DateTime.Now;
-
             //whatever to-change properties do i shof me von
+            existingBankAccount.DateModified = DateTime.Now;
+            existingBankAccount.Balance = entity.Balance;
 
             // Save the changes
             _repositoryContext.SaveChanges();

@@ -25,16 +25,6 @@ namespace Repository
             _repositoryContext.SaveChanges();
         }
 
-        public void Delete(int id)
-        {
-            var bankTransaction = _repositoryContext.BankTransactions.Find(id);
-            if (bankTransaction != null)
-            {
-                _repositoryContext.BankTransactions.Remove(bankTransaction);
-                _repositoryContext.SaveChanges();
-            }
-        }
-
         public ICollection<BankTransaction> FindAll()
         {
             return _repositoryContext.BankTransactions.ToList();
@@ -47,24 +37,11 @@ namespace Repository
 
         public bool Update(BankTransaction entity)
         {
-            var existingBankTransaction = _repositoryContext.BankTransactions.Find(entity.Id);
-
-            // Update the DateModified
-            existingBankTransaction.DateModified = DateTime.Now;
-
-            //whatever to-change properties do i shof me von
-
-            // Save the changes
-            _repositoryContext.SaveChanges();
-            return true;
+            throw new NotImplementedException();
         }
-
-        public void SoftDelete(BankTransaction bankTransaction)
+        public void Delete(int id)
         {
-            bankTransaction.IsActive = false;
-            _repositoryContext.Update(bankTransaction);
-            _repositoryContext.SaveChanges();
+            throw new NotImplementedException();
         }
-
     }
 }
