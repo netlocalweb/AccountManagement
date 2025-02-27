@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Entities.Models;
 
 namespace Entities.DTO
 {
@@ -36,11 +30,4 @@ namespace Entities.DTO
         public int ClientId { get; set; }
     }
 
-    public class SelectBankAccDTO //for when the client wants to login to an existing bank acc
-    {
-        [Required]
-        public string Code { get; set; }
-        [Required]
-        public string Name { get; set; }
-    }
 }

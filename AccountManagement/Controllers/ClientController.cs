@@ -1,9 +1,7 @@
 ﻿using Contracts;
 using Entities.DTO;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Repository;
 using AutoMapper;
 
 namespace AccountManagement.Controllers

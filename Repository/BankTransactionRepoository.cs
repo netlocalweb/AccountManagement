@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Models;
@@ -33,6 +31,19 @@ namespace Repository
         public BankTransaction FindById(int id)
         {
             return _repositoryContext.BankTransactions.Find(id);
+        }
+
+        public List<BankTransaction> FindByBankAccountId(int id)
+        {
+            return _repositoryContext.BankTransactions
+                .Where(t => t.BankAccountId == id)
+                .Select(t => new BankTransaction
+                {
+                    Action = t.Action,
+                    Amount = t.Amount,
+                    DateCreated = t.DateCreated
+                })
+                .ToList();
         }
 
         public bool Update(BankTransaction entity)

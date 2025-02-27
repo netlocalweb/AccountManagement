@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Models;
@@ -48,17 +46,13 @@ namespace Repository
         {
             var existingProduct = _repositoryContext.Products.Find(entity.Id);
 
-            // Update the DateModified
             existingProduct.DateModified = DateTime.Now;
-
-            // Update the other properties
             existingProduct.Name = entity.Name;
             existingProduct.ShortDescription = entity.ShortDescription;
             existingProduct.LongDescription = entity.LongDescription;
             existingProduct.CategoryId = entity.CategoryId;
             existingProduct.Price = entity.Price;
             existingProduct.Image = entity.Image;
-
 
             // Save the changes
             _repositoryContext.SaveChanges();

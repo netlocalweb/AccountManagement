@@ -4,12 +4,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Entities.DTO;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using NuGet.Configuration;
-using System.Linq;
-using System.Threading.Tasks;
 using Entities;
 
 namespace AccountManagement.Controllers
@@ -24,7 +20,7 @@ namespace AccountManagement.Controllers
         public AuthController(IConfiguration configuration, RepositoryContext context)
         {
             _configuration = configuration;
-            _repositoryContext = context; // Initialize the context
+            _repositoryContext = context;
         }
 
         [HttpPost("register")]

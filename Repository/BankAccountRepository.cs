@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.DTO;
 using Entities.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
@@ -63,6 +61,21 @@ namespace Repository
             bankAccount.IsActive = false;
             _repositoryContext.Update(bankAccount);
             _repositoryContext.SaveChanges();
+        }
+
+        public List<BankAccount> FindByClientId(int id)
+        {
+            return _repositoryContext.BankAccounts
+                .Where(t => t.ClientId == id 
+                        && t.IsActive == true)
+                .Select(t => new BankAccount
+                {
+                    Code = t.Name,   
+                    Name = t.Id.ToString(), 
+                    Balance = t.Balance,
+                    CurrencyId = t.CurrencyId
+                })
+                .ToList();
         }
 
     }

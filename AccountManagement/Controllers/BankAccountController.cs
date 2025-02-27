@@ -3,7 +3,6 @@ using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Entities.DTO;
-using System.Collections.Generic;
 
 namespace AccountManagement.Controllers
 {

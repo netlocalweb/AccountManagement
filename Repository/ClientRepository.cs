@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Models;
@@ -47,10 +45,8 @@ namespace Repository
         {
             var existingClient = _repositoryContext.Clients.Find(entity.Id);
 
-            // Update the DateModified
-            existingClient.DateModified = DateTime.Now;
-
             //whatever to-change properties do i shof me von
+            existingClient.DateModified = DateTime.Now;
 
             // Save the changes
             _repositoryContext.SaveChanges();

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Models;
@@ -48,10 +46,8 @@ namespace Repository
         {
             var existingCategory = _repositoryContext.Categories.Find(entity.Id);
 
-            // Update the DateModified
-            existingCategory.DateModified = DateTime.Now;
-
             //whatever to-change properties do i shof me von
+            existingCategory.DateModified = DateTime.Now;
 
             // Save the changes
             _repositoryContext.SaveChanges();

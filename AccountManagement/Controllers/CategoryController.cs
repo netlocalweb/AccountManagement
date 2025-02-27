@@ -1,9 +1,7 @@
 ﻿using Contracts;
-using Entities.DTO;  // Use the DTO namespace
+using Entities.DTO;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Repository;
 using AutoMapper;
 
 namespace AccountManagement.Controllers
@@ -13,7 +11,7 @@ namespace AccountManagement.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
-        private readonly IMapper _mapper;  // AutoMapper
+        private readonly IMapper _mapper;
 
         public CategoryController(ICategoryRepository categoryRepository, IMapper mapper)
         {
@@ -21,17 +19,14 @@ namespace AccountManagement.Controllers
             _mapper = mapper;
         }
 
-        // Get All Categories
         [HttpGet]
         public IActionResult GetAllCategories()
         {
             var categories = _categoryRepository.FindAll();
-            // Map to CategoryDTO list
             var categoryDTOs = _mapper.Map<List<CategoryDTO>>(categories);
             return Ok(categoryDTOs);
         }
 
-        // Get Category By Id
         [HttpGet("{id}")]
         public IActionResult GetCategoryById(int id)
         {
@@ -40,12 +35,11 @@ namespace AccountManagement.Controllers
             {
                 return NotFound();
             }
-            // Map to CategoryDTO
+            
             var categoryDTO = _mapper.Map<CategoryDTO>(category);
             return Ok(categoryDTO);
         }
 
-        // Add a New Category
         [HttpPost]
         public IActionResult AddCategory(AddCategoryDTO addCategoryDTO)
         {
@@ -54,16 +48,13 @@ namespace AccountManagement.Controllers
                 return BadRequest();
             }
 
-            // Map AddCategoryDTO to Category entity
             var category = _mapper.Map<Category>(addCategoryDTO);
             _categoryRepository.Create(category);
 
-            // Map the newly created category to CategoryDTO for response
             var categoryDTO = _mapper.Map<CategoryDTO>(category);
             return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, categoryDTO);
         }
 
-        // Update an Existing Category
         [HttpPut("{id}")]
         public IActionResult UpdateCategory(int id, AddCategoryDTO addCategoryDTO)
         {
@@ -78,14 +69,12 @@ namespace AccountManagement.Controllers
                 return NotFound();
             }
 
-            // Map AddCategoryDTO to Category entity
             var category = _mapper.Map<Category>(addCategoryDTO);
             _categoryRepository.Update(category);
 
             return NoContent();
         }
 
-        // Delete a Category
         [HttpDelete("{id}")]
         public IActionResult DeleteCategory(int id)
         {
