@@ -14,7 +14,6 @@ namespace AccountManagement
 
             CreateMap<BankAccount, BankAccountDTO>().ReverseMap();
             CreateMap<BankAccount, CreateBankAccDTO>().ReverseMap();
-            CreateMap<BankAccount, SelectBankAccDTO>().ReverseMap();
 
             CreateMap<Category, CategoryDTO>().ReverseMap();
             CreateMap<Category, AddCategoryDTO>().ReverseMap();
