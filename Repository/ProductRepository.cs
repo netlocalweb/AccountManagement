@@ -59,5 +59,13 @@ namespace Repository
             return true;
         }
 
+        public List<Product> FindByCategoryId(int id)
+        {
+            return _repositoryContext.Products
+                .Where(t => t.CategoryId == id)
+                .OrderBy(t => t.DateCreated) 
+                .ToList();
+        }
+
     }
 }
