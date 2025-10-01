@@ -1,5 +1,8 @@
+using AccountManagement.API.Data;
+using AccountManagement.API.Repositories;
+using AccountManagement.API.Validation;
 using AccountManagement.Extensions;
-using AspNetCoreRateLimit;
+using AccountManagement.Repositories;
 using AutoMapper;
 using Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,19 +31,42 @@ namespace AccountManagement
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Logging, CORS, IIS integration
             services.ConfigureCors();
             services.ConfigureIISIntegration();
             services.ConfigureLoggerService();
-            services.ConfigureSqlContext(Configuration);
-            services.ConfigureDapperContext();
-            services.ConfigureRepositoryManager();
-            services.ConfigureDapperRepository();
+
+            // DbContexts
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Repositories
+            services.AddScoped<IClientRepository, ClientRepository>();
+
+            services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+            services.AddScoped<IProductRepository, ProductRepository>();
+
+            services.AddScoped<IBankAccountRepository, BankAccountRepository>();
+
+            services.AddScoped<IBankTransactionRepository, BankTransactionRepository>();
+
+            // JWT Token service
+            services.AddScoped<JwtTokenService>();
+           
+
+
+
+            // AutoMapper
             services.AddAutoMapper(typeof(Startup));
+
             services.AddHttpContextAccessor();
 
+            // Authentication
             services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -48,29 +75,39 @@ namespace AccountManagement
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:Token").Value))
+
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                 };
             });
 
-            services.ConfigureSwagger();
+            // Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Account Management API",
+                    Version = "v1"
+                });
+            });
 
+            // Controllers & API behavior
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
 
             services.AddControllers(config =>
-           {
-               config.RespectBrowserAcceptHeader = true;
-               config.ReturnHttpNotAcceptable = true;
-           }).AddNewtonsoftJson();
+            {
+                config.RespectBrowserAcceptHeader = true;
+                config.ReturnHttpNotAcceptable = true;
+            }).AddNewtonsoftJson();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
         {
             if (env.IsDevelopment())
@@ -83,6 +120,7 @@ namespace AccountManagement
             }
 
             app.ConfigureExceptionHandler(logger);
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -98,10 +136,12 @@ namespace AccountManagement
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Swagger
             app.UseSwagger();
-            app.UseSwaggerUI(s =>
+            app.UseSwaggerUI(c =>
             {
-                s.SwaggerEndpoint("/swagger/v1/swagger.json", "Account Management API v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Account Management API v1");
+                c.RoutePrefix = "swagger"; // Swagger available at root
             });
 
             app.UseEndpoints(endpoints =>

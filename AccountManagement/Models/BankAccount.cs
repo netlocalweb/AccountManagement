@@ -1,0 +1,41 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace AccountManagement.API.Models
+{
+    public class BankAccount
+    {
+        public int Id { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        public string Code { get; set; } = null!;
+
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; } = null!;
+
+        [Required]
+        public int CurrencyId { get; set; }
+
+        [ForeignKey(nameof(CurrencyId))]
+        public Currency Currency { get; set; } = null!;
+
+        [Required]
+        public  decimal Balance { get; set; }
+
+        [Required]
+        public  int ClientId { get; set; }
+
+        [ForeignKey(nameof(ClientId))]
+        public Client Client { get; set; } = null!;
+
+        public bool IsActive { get; set; } = true;  
+
+        [Required]
+        public DateTime DateCreated { get; set; }
+
+        public DateTime? DateModified { get; set; }
+    }
+}
