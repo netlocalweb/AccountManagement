@@ -1,0 +1,17 @@
+﻿using AccountManagement.API.Models;
+using System;
+
+namespace AccountManagement.Models.DTOs
+{
+    public class BankTransactionReadDto
+    {
+        public int Id { get; set; }
+        public int BankAccountId { get; set; }
+        public TransactionAction Action { get; set; }
+        public decimal Amount { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime DateCreated { get; set; }
+    }
+
+}
+

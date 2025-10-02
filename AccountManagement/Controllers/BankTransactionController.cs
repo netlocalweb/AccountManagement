@@ -1,4 +1,5 @@
 ﻿using AccountManagement.API.Models;
+using AccountManagement.Models.DTOs;
 using AccountManagement.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +19,36 @@ namespace AccountManagement.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(BankTransaction transaction)
+        public async Task<IActionResult> Create([FromBody] BankTransactionCreateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await repository.AddAsync(transaction);
-            return Ok(created);
+            try
+            {
+                var transaction = await repository.AddTransactionAsync(dto);
+                return CreatedAtAction(nameof(GetById), new { id = transaction.Id }, transaction);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var transaction = await repository.GetTransactionByIdAsync(id);
+            if (transaction == null)
+                return NotFound();
+            return Ok(transaction);
+        }
+
+        [HttpGet("account/{bankAccountId}")]
+        public async Task<IActionResult> GetByAccount(int bankAccountId)
+        {
+            var transactions = await repository.GetTransactionsByAccountAsync(bankAccountId);
+            return Ok(transactions);
         }
     }
 }

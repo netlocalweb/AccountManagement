@@ -34,8 +34,8 @@ namespace AccountManagement.Repositories
 
         public async Task<BankAccount> AddAsync(BankAccount account)
         {
-            account.DateCreated = DateTime.UtcNow;
-            account.IsActive = true;
+            
+            
 
             context.BankAccounts.Add(account);
             await context.SaveChangesAsync();
@@ -44,10 +44,18 @@ namespace AccountManagement.Repositories
 
         public async Task<BankAccount> UpdateAsync(BankAccount account)
         {
-            account.DateModified = DateTime.UtcNow;
-            context.BankAccounts.Update(account);
+            var existing = await context.BankAccounts.FindAsync(account.Id);
+            if (existing == null) return null;
+
+            existing.Code = account.Code;
+            existing.Name = account.Name;
+            existing.CurrencyId = account.CurrencyId;
+            existing.IsActive = account.IsActive;
+            if (account.Balance >= 0) existing.Balance = account.Balance;
+            existing.DateModified = DateTime.UtcNow;
+
             await context.SaveChangesAsync();
-            return account;
+            return existing;
         }
     }
 

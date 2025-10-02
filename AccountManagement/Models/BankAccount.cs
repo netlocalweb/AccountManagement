@@ -6,6 +6,7 @@ namespace AccountManagement.API.Models
 {
     public class BankAccount
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]

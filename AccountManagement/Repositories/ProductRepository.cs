@@ -33,7 +33,7 @@ namespace AccountManagement.Repositories
 
         public async Task<Product> AddAsync(Product product)
         {
-            product.DateCreated = DateTime.UtcNow;//filled with the current date when it is created
+           
             context.Products.Add(product);
             await context.SaveChangesAsync();
             return product;
@@ -42,11 +42,19 @@ namespace AccountManagement.Repositories
 
         public async Task<Product> UpdateAsync(Product product)
         {
-            product.DateModified = DateTime.UtcNow;//filled with the current date when it is modified
-            context.Products.Update(product);
-            await context.SaveChangesAsync();
-            return product;
+            var existing = await context.Products.FindAsync(product.Id);
+            if (existing == null) return null;
 
+            existing.Name = product.Name;
+            existing.ShortDescription = product.ShortDescription;
+            existing.LongDescription = product.LongDescription;
+            existing.CategoryId = product.CategoryId;
+            existing.Price = product.Price;
+            existing.ImageUrl = product.ImageUrl;
+            existing.DateModified = DateTime.UtcNow;
+
+            await context.SaveChangesAsync();
+            return existing;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -56,7 +64,7 @@ namespace AccountManagement.Repositories
 
             context.Products.Remove(product);
             await context.SaveChangesAsync();
-            return false;
+            return true;
 
         }
 
