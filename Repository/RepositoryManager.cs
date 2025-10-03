@@ -1,27 +1,24 @@
 ﻿using Contracts;
-using Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class RepositoryManager : IRepositoryManager
+    public sealed class RepositoryManager : IRepositoryManager
     {
-        private RepositoryContext _repositoryContext;
-        private ITestRepository _testRepository;
+        private readonly RepositoryContext _context;
+        private Lazy<IClientRepository> _clientRepository;
 
-        public RepositoryManager(RepositoryContext repositoryContext)
+        public RepositoryManager(RepositoryContext context)
         {
-            _repositoryContext = repositoryContext;
+            _context = context;
+            _clientRepository = new Lazy<IClientRepository>(() => new ClientRepository(_context));
         }
 
-        public ITestRepository TestRepository
-        {
-            get
-            {
-                if (_testRepository == null)
-                    _testRepository = new TestRepository(_repositoryContext);
-
-                return _testRepository;
-            }
-        }
+        public IClientRepository Client => _clientRepository.Value;
+        public async Task SaveAsync() => await _context.SaveChangesAsync();
     }
 }

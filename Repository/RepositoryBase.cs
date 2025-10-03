@@ -1,5 +1,6 @@
 ﻿using Contracts;
-using Entities;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Repository
 {
@@ -8,13 +9,26 @@ namespace Repository
         protected RepositoryContext RepositoryContext;
 
         public RepositoryBase(RepositoryContext repositoryContext)
-        {
-            RepositoryContext = repositoryContext;
-        }
+            => RepositoryContext = repositoryContext;
 
-        public string TestMethodFromBase()
-        {
-            return "This is a test method from RepositoryBase";
-        }
+        public IQueryable<T> FindAll(bool trackChanges)
+            => !trackChanges
+                ? RepositoryContext.Set<T>()
+                    .AsNoTracking()
+                : RepositoryContext.Set<T>();
+
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges)
+            => !trackChanges
+                ? RepositoryContext.Set<T>()
+                    .Where(expression)
+                    .AsNoTracking()
+                : RepositoryContext.Set<T>()
+                    .Where(expression);
+
+        public void Create(T entity) => RepositoryContext.Set<T>().Add(entity);
+
+        public void Update(T entity) => RepositoryContext.Set<T>().Update(entity);
+
+        public void Delete(T entity) => RepositoryContext.Set<T>().Remove(entity);
     }
 }

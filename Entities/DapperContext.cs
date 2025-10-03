@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Data;
 
+
 namespace Entities
 {
     public class DapperContext

@@ -1,16 +1,11 @@
-﻿using Contracts;
-using Entities;
+﻿using AccountManagement.Service;
+using Contracts;
+using Entities.Models;
 using LoggerService;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Repository;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 
 namespace AccountManagement.Extensions
 {
@@ -31,42 +26,28 @@ namespace AccountManagement.Extensions
 
             });
 
-        public static void ConfigureLoggerService(this IServiceCollection services) =>
-            services.AddScoped<ILoggerManager, LoggerManager>();
-
-        public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration) =>
-            services.AddDbContext<RepositoryContext>(opts =>
-                opts.UseSqlServer(configuration.GetConnectionString("sqlConnection"), b => b.MigrationsAssembly("AccountManagement")));
-
-        public static void ConfigureDapperContext(this IServiceCollection services) =>
-            services.AddSingleton<DapperContext>();
-
-        public static void ConfigureRepositoryManager(this IServiceCollection services) =>
-           services.AddScoped<IRepositoryManager, RepositoryManager>();
-
-        public static void ConfigureDapperRepository(this IServiceCollection services) =>
-            services.AddScoped<IDapperRepository, DapperRepository>();
-
         public static void ConfigureSwagger(this IServiceCollection services)
         {
-            services.AddSwaggerGen(s =>
+            services.AddSwaggerGen(options =>
             {
-                s.SwaggerDoc("v1", new OpenApiInfo
+                options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Account Management API",
                     Version = "v1",
                     Description = "AccountManagement API by LocalWeb",
                 });
 
-                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer",
                     In = ParameterLocation.Header,
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
+                    Description = "Enter 'Bearer {your token}'"
                 });
 
-                s.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -75,13 +56,50 @@ namespace AccountManagement.Extensions
                             {
                                 Type = ReferenceType.SecurityScheme,
                                 Id = "Bearer"
-                            },
-                            Name = "Bearer",
+                            }
                         },
-                        new List<string>()
+                        Array.Empty<string>()
                     }
                 });
             });
         }
+
+        public static void ConfigureApplicationServices(this IServiceCollection services)
+        {
+            services.AddSingleton<ILoggerManager, LoggerManager>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IRepositoryManager, RepositoryManager>();
+            services.AddScoped<IAuthService, AuthService>();
+
+        }
+        public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration) => 
+            services.AddDbContext<RepositoryContext>(opts => 
+            opts.UseSqlServer(configuration.GetConnectionString("AccountManagementConnectionString"), b => b.MigrationsAssembly("AccountManagement"))
+            );
+
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+            var buider = services.AddIdentity<User, IdentityRole>(opt =>
+            {
+                opt.Password.RequireDigit = true;
+                opt.Password.RequireLowercase = true;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequiredLength = 8;
+                opt.User.RequireUniqueEmail = true;
+            })
+                .AddEntityFrameworkStores<RepositoryContext>()
+                .AddDefaultTokenProviders();
+        }
+
+
+
+        //    public static void ConfigureDapperContext(this IServiceCollection services) =>
+        //        services.AddSingleton<DapperContext>();
+
+        //    public static void ConfigureRepositoryManager(this IServiceCollection services) =>
+        //       services.AddScoped<IRepositoryManager, RepositoryManager>();
+
+        //    public static void ConfigureDapperRepository(this IServiceCollection services) =>
+        //        services.AddScoped<IDapperRepository, DapperRepository>();
     }
 }
