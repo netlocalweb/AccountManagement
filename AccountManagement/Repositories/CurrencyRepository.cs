@@ -25,10 +25,17 @@ namespace AccountManagement.API.Repositories
         {
             return await context.Currencies.FindAsync(id);
         }
+        public async Task<Currency> GetByCodeAsync(string code)
+        {
+            return await context.Currencies.FirstOrDefaultAsync(c => c.Code == code);
+        }
+
 
         public async Task<Currency> AddAsync(Currency currency)
         {
-            currency.DateCreated = DateTime.UtcNow;
+            currency.Code = currency.Code.ToUpper();
+            currency.DateCreated = System.DateTime.UtcNow;
+
             context.Currencies.Add(currency);
             await context.SaveChangesAsync();
             return currency;
@@ -36,7 +43,7 @@ namespace AccountManagement.API.Repositories
 
         public async Task<Currency> UpdateAsync(Currency currency)
         {
-            currency.DateModified = DateTime.UtcNow;
+            currency.DateModified = System.DateTime.UtcNow;
             context.Currencies.Update(currency);
             await context.SaveChangesAsync();
             return currency;

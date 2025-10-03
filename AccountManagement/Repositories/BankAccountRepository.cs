@@ -23,7 +23,7 @@ namespace AccountManagement.Repositories
         public async Task<IEnumerable<BankAccount>> GetAllAsync(int clientId)
         {
             return await context.BankAccounts
-                .Where(b => b.ClientId == clientId)
+                .Where(b => b.ClientId == clientId && b.IsActive)
                 .ToListAsync();
         }
 
@@ -57,7 +57,20 @@ namespace AccountManagement.Repositories
             await context.SaveChangesAsync();
             return existing;
         }
+
+        public async Task<bool> SoftDeleteAsync(int id)
+        {
+            var existing = await context.BankAccounts.FindAsync(id);
+            if (existing == null) return false;
+
+            existing.IsActive = false;
+            existing.DateModified = DateTime.UtcNow;
+
+            await context.SaveChangesAsync();
+            return true;
+        }
+
     }
 
-   }
+}
 

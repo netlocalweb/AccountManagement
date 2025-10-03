@@ -7,8 +7,9 @@ namespace AccountManagement.Repositories
 {
     public interface IBankTransactionRepository
     {
-        Task<BankTransactionReadDto> AddTransactionAsync(BankTransactionCreateDto dto);
-        Task<BankTransactionReadDto?> GetTransactionByIdAsync(int id);
-        Task<IEnumerable<BankTransactionReadDto>> GetTransactionsByAccountAsync(int bankAccountId);
+        Task<IEnumerable<BankTransaction>> GetAllAsync(int bankAccountId);
+        Task<BankTransaction> GetByIdAsync(int id);
+        Task<BankTransaction> AddAsync(BankTransaction transaction);
+        Task<bool> SoftDeleteAsync(int id);
     }
 }

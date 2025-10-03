@@ -19,17 +19,17 @@ namespace AccountManagement.API.Repositories
             return await dbContext.Clients.AsNoTracking().ToListAsync();
         }
 
-        public async Task<Client?> GetByIdAsync(int id)
+        public async Task<Client> GetByIdAsync(int id)
         {
             return await dbContext.Clients.FindAsync(id);
         }
 
-        public async Task<Client?> GetByEmailAsync(string email)
+        public async Task<Client> GetByEmailAsync(string email)
         {
             return await dbContext.Clients.FirstOrDefaultAsync(c => c.Email == email);
         }
 
-        public async Task<Client?> GetByUsernameAsync(string username)
+        public async Task<Client> GetByUsernameAsync(string username)
         {
             return await dbContext.Clients.FirstOrDefaultAsync(c => c.Username == username );
         }

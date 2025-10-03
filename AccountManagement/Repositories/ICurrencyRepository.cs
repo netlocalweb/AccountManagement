@@ -8,6 +8,8 @@ namespace AccountManagement.API.Repositories
     {
         Task<IEnumerable<Currency>> GetAllAsync();
         Task<Currency> GetByIdAsync(int id);
+
+        Task<Currency> GetByCodeAsync(string code);
         Task<Currency> AddAsync(Currency currency);
         Task<Currency> UpdateAsync(Currency currency);
         Task<bool> DeleteAsync(int id);

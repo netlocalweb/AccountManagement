@@ -129,6 +129,16 @@ namespace AccountManagement.API.Controllers
             return Ok(readDto);
         }
 
-     
+        //Soft delete
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await repository.SoftDeleteAsync(id);
+            if (!deleted) return NotFound();
+
+            return NoContent();
+
+
+        }
     }
 }

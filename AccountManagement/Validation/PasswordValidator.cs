@@ -4,7 +4,7 @@ namespace AccountManagement.API.Validation
 {
     public static class PasswordValidator
     {
-        // Regex: min 8 chars, at least 1 lowercase, 1 uppercase, 1 digit, 1 special char
+        //Pass must be in 8 chars, at least 1 lowercase, 1 uppercase, 1 digit, 1 special char
         private static readonly Regex StrongPasswordRegex =
             new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$");
 

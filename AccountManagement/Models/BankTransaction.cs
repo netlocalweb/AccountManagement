@@ -1,9 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace AccountManagement.API.Models
 {
     public class BankTransaction
     {
+        [Key]
         public int Id { get; set; }
         public int BankAccountId { get; set; }
         public TransactionAction Action { get; set; } 
@@ -17,8 +19,8 @@ namespace AccountManagement.API.Models
 
     public enum TransactionAction
     {
-        Deposit = 0,
-        Withdraw = 1
+        Deposit = 1,
+        Withdraw = 2
 
     }
 }

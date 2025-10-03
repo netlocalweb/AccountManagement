@@ -10,5 +10,6 @@ namespace AccountManagement.API.Repositories
         Task<BankAccount> GetByIdAsync(int id);
         Task<BankAccount> AddAsync(BankAccount account);
         Task<BankAccount> UpdateAsync(BankAccount account);
+        Task<bool> SoftDeleteAsync(int id);
     }
 }

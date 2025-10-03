@@ -34,19 +34,22 @@ namespace AccountManagement.API.Repositories
             return category;
         }
 
-        public async Task<Category> UpdateAsync(Category category)
+        public async Task<Category> UpdateAsync(int id, Category category)
         {
-            category.DateModified = DateTime.UtcNow;
-            context.Categories.Update(category);
+            var existing = await context.Categories.FindAsync(id);
+            if (existing == null) return null;
+
+            existing.Description = category.Description;
+            existing.DateModified = DateTime.UtcNow;
+
             await context.SaveChangesAsync();
-            return category;
+            return existing;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
             var category = await context.Categories.FindAsync(id);
-            if (category == null)
-                return false;
+            if (category == null) return false;
 
             context.Categories.Remove(category);
             await context.SaveChangesAsync();
