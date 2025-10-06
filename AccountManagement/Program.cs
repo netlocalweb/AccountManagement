@@ -17,7 +17,9 @@ builder.Services.ConfigureIISIntegration();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.ConfigureApplicationServices();
 builder.Services.ConfigureDatabase(builder.Configuration);
+builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJWT(builder.Configuration);
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;

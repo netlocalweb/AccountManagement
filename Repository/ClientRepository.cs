@@ -17,10 +17,12 @@ namespace Repository
        
         }
 
+
         public async Task<IEnumerable<Client>> GetAllClientsAsync(bool trackChanges) =>
             await FindAll(trackChanges)
             .Include(c => c.User)
             .ToListAsync();
+
 
         public async Task<Client?> GetClientByIdAsync(int id, bool trackChanges) =>
             await FindByCondition(c => c.Id.Equals(id), trackChanges)

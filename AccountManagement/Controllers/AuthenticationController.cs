@@ -33,5 +33,18 @@ namespace AccountManagement.Controllers
             }
             return StatusCode(201);
         }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto user)
+        {
+            if (!await _authService.ValidateUser(user))
+                return Unauthorized();
+
+            return Ok(new
+            {
+                Token = await _authService
+            .CreateToken()
+            });
+        }
     }
 }
