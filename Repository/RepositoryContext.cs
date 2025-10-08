@@ -19,5 +19,6 @@ namespace Repository
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Client> Clients { get; set; }
+        public DbSet<Currency> Currencys { get; set; }
     }
 }

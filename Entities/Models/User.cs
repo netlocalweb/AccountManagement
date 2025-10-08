@@ -11,6 +11,8 @@ namespace Entities.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public bool IsLockedOut { get; set; } = false;
+        public DateTime? LockoutDate { get; set; } = DateTime.UtcNow;
         public Client? Client { get; set; }
 
     }

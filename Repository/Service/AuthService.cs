@@ -10,7 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection.Metadata.Ecma335;
 
 
 
@@ -67,9 +66,15 @@ namespace AccountManagement.Service
         {
            _user = await _userManager.FindByNameAsync(userForAuth.UserName);
 
-            var result = (_user != null && await _userManager.CheckPasswordAsync(_user, userForAuth.Password));
+             var result = (_user != null && await _userManager.CheckPasswordAsync(_user, userForAuth.Password));
             if (!result)
                 _loggerManager.LogWarn($"{nameof(ValidateUser)} : Authentication failed.Wrong user name or password .");
+
+            if (_user.IsLockedOut)
+            {
+                _loggerManager.LogWarn($"Authentication failed. User {_user.UserName} is locked out.");
+                return false;
+            }
             return result;
         }
 
@@ -98,7 +103,7 @@ namespace AccountManagement.Service
                 new Claim(ClaimTypes.NameIdentifier, _user.Id),
                 new Claim(ClaimTypes.Email, _user.Email)
             };
-            return claims;
+             return claims;
 
         }
 

@@ -14,15 +14,12 @@ namespace Repository
     {
         public ClientRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
-       
+
         }
-
-
         public async Task<IEnumerable<Client>> GetAllClientsAsync(bool trackChanges) =>
             await FindAll(trackChanges)
             .Include(c => c.User)
             .ToListAsync();
-
 
         public async Task<Client?> GetClientByIdAsync(int id, bool trackChanges) =>
             await FindByCondition(c => c.Id.Equals(id), trackChanges)
@@ -31,8 +28,15 @@ namespace Repository
 
         public void CreateClient(Client client) => Create(client);
         public void UpdateClient(Client client) => Update(client);
-        public void DeleteClient(Client client) => Delete(client);
-       
+        public void DeleteClient(Client client)
+        {
+            if (client.User != null)
+            {
+                client.User.IsLockedOut = true;
+                client.User.LockoutDate = DateTime.UtcNow;
+            }
+            Update(client);
+        }
 
     }
 }
