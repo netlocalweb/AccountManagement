@@ -42,5 +42,7 @@ namespace Entities.Models
         // Navigation properties
         public virtual User User { get; set; } = null!;
 
+        public ICollection<BankAccount>? BankAccounts { get; set; }
+
     }
 }

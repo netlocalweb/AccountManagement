@@ -21,5 +21,8 @@ namespace Entities.Models
         public DateTime DateCreated { get; set; } = DateTime.Now;
         public DateTime? DateModified { get; set; }
 
+        //navigation propert for bank acc 
+        public ICollection<BankAccount>? BankAccounts { get; set; }
+
     }
 }

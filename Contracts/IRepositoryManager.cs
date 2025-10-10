@@ -9,6 +9,7 @@ namespace Contracts
     public interface IRepositoryManager
     {
         IClientRepository Client {  get; }
-        Task SaveAsync();
+        ICurrencyRepository Currency { get; }
+        Task SaveAsync();  
     }
 }
