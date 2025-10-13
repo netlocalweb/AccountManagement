@@ -19,6 +19,11 @@ namespace Repository
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Client> Clients { get; set; }
-        public DbSet<Currency> Currencys { get; set; }
+        public DbSet<Currency> Currencies { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Products> Products { get; set; }
+        public DbSet<BankAccount> BankAccounts { get; set; }
+        public DbSet<BankTransaction> BankTransactions { get; set; }
+
     }
 }

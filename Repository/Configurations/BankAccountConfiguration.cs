@@ -15,11 +15,38 @@ namespace Repository.Configurations
         {
             builder.HasKey(b => b.Id);
 
-            builder.Property(b => b.Code).IsRequired().HasMaxLength(50);
-            builder.Property(b => b.Name).IsRequired().HasMaxLength(50);
-            builder.Property(b => b.Balance).IsRequired().HasColumnType("decimal(18,2)");
-            builder.Property(b => b.DateCreated).IsRequired();
+            builder.Property(b => b.Code)
+                .IsRequired()
+                .HasMaxLength(50);
 
+            builder.Property(b => b.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            builder.Property(b => b.Balance)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(b => b.DateCreated)
+                .IsRequired();
+
+            builder.Property(b => b.DateCreated)
+                .IsRequired();
+
+            builder.HasIndex(b => new { b.ClientId, b.Code })
+                .IsUnique();
+
+            //relationship with client
+            builder.HasOne( b => b.Client)
+                .WithMany( c => c.BankAccounts)
+                .HasForeignKey(b => b.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //realtioship with Currency
+            builder.HasOne(b => b.Currency)
+                .WithMany()
+                .HasForeignKey(b => b.CurrencyId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

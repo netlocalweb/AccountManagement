@@ -10,6 +10,7 @@ namespace Contracts
     {
         IClientRepository Client {  get; }
         ICurrencyRepository Currency { get; }
+        ICategoryRepository Category { get; }
         Task SaveAsync();  
     }
 }

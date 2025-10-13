@@ -74,7 +74,6 @@ namespace AccountManagement.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRepositoryManager, RepositoryManager>();
             services.AddScoped<IAuthService, AuthService>();
-
         }
         public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration) => 
             services.AddDbContext<RepositoryContext>(opts => 

@@ -28,5 +28,7 @@ namespace Repository
             .SingleOrDefaultAsync();
         public void CreateCurrency(Currency currency) => Create(currency);
         public void DeleteCurrency(Currency currency) => Delete(currency);
+
+        public void UpdateCurrency(Currency currency) => Update(currency);
     }
 }
