@@ -1,8 +1,8 @@
-﻿using AccountManagement.API.Models;
+﻿using AccountManagement.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AccountManagement.API.Repositories
+namespace AccountManagement.Repositories
 {
     public interface ICurrencyRepository
     {

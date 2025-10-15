@@ -1,14 +1,16 @@
-﻿using AccountManagement.API.Models;
-using AccountManagement.API.Repositories;
+﻿using AccountManagement.Models;
+using AccountManagement.Repositories;
 using AccountManagement.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AccountManagement.API.Controllers
+namespace AccountManagement.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BankAccountController : ControllerBase
@@ -24,7 +26,7 @@ namespace AccountManagement.API.Controllers
         public async Task<IActionResult> GetAll([FromQuery] int clientId)
         {
             if (clientId <= 0)
-                return BadRequest("ClientId must be provided and greater than zero.");
+                return BadRequest("ClientId must be greater than zero.");
 
             var accounts = await repository.GetAllAsync(clientId);
             var dtos = accounts.Select(a => new BankAccountReadDto

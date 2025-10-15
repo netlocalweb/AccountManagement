@@ -1,7 +1,8 @@
-﻿using AccountManagement.API.Models;
-using AccountManagement.API.Repositories;
-using AccountManagement.API.Validation;
+﻿using AccountManagement.Models;
+using AccountManagement.Repositories;
+using AccountManagement.Validation;
 using AccountManagement.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AccountManagement.API.Controllers
+namespace AccountManagementControllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class ClientsController : ControllerBase

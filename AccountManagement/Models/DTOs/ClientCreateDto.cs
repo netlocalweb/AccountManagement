@@ -8,10 +8,11 @@ namespace AccountManagement.Dtos
         [Required]
         public string FirstName { get; set; } = null!;
 
-        [Required] 
+        [Required]
         public string LastName { get; set; } = null!;
 
-        [Required, EmailAddress]
+        [Required]
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid email format.")]
         public string Email { get; set; } = null!;
 
         [Required] 

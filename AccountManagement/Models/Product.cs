@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AccountManagement.API.Models
+namespace AccountManagement.Models
 {
     public class Product
     {
@@ -30,8 +30,8 @@ namespace AccountManagement.API.Models
 
 
         [Required]
-        public DateTime DateCreated { get; set; }
-        public DateTime? DateModified { get; set; }
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+        public DateTime? DateModified { get; set; } = DateTime.UtcNow;
 
 
 

@@ -1,5 +1,5 @@
-﻿using AccountManagement.API.Data;
-using AccountManagement.API.Models;
+﻿using AccountManagement.Data;
+using AccountManagement.Models;
 using AccountManagement.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System;

@@ -1,21 +1,24 @@
-using AccountManagement.API.Data;
-using AccountManagement.API.Repositories;
-using AccountManagement.API.Validation;
-using AccountManagement.Extensions;
+using AccountManagement.Data;
 using AccountManagement.Repositories;
+using AccountManagement.Validation;
+using AccountManagement.Extensions;
 using AutoMapper;
 using Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
+using Repository;
+using System;
 using System.IO;
 using System.Text;
 
@@ -37,6 +40,7 @@ namespace AccountManagement
             services.ConfigureCors();
             services.ConfigureIISIntegration();
             services.ConfigureLoggerService();
+            
 
             // DbContexts
             services.AddDbContext<AppDbContext>(options =>
@@ -55,9 +59,11 @@ namespace AccountManagement
 
             services.AddScoped<IBankTransactionRepository, BankTransactionRepository>();
 
+            services.AddScoped<Repositories.IDapperRepository, Repositories.DapperRepository>();
+
             // JWT Token service
             services.AddScoped<JwtTokenService>();
-           
+
 
 
 
@@ -80,12 +86,16 @@ namespace AccountManagement
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
 
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Audience"],
+
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                 };
             });
+            services.AddAuthorization();
 
-            // Swagger
+            // Swagger configuration
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -93,19 +103,52 @@ namespace AccountManagement
                     Title = "Account Management API",
                     Version = "v1"
                 });
-            });
 
-            // Controllers & API behavior
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
 
-            services.AddControllers(config =>
+                // Add JWT Authorization to Swagger
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Enter your JWT token below "
+                });
+
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+        {
             {
+                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    {
+                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+            });
+       
+
+    // Controllers & API behavior
+    services.Configure<ApiBehaviorOptions>(options =>
+     {
+         options.SuppressModelStateInvalidFilter = true;
+     });
+
+    services.AddControllers(config =>
+            {
+         var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
                 config.RespectBrowserAcceptHeader = true;
                 config.ReturnHttpNotAcceptable = true;
-            }).AddNewtonsoftJson();
+            })
+            .AddNewtonsoftJson();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)

@@ -1,6 +1,7 @@
-﻿using AccountManagement.API.Models;
+﻿using AccountManagement.Models;
 using AccountManagement.Models.DTOs;
 using AccountManagement.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace AccountManagement.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BankTransactionController : ControllerBase

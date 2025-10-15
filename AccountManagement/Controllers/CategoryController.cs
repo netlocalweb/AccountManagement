@@ -1,13 +1,15 @@
-﻿using AccountManagement.API.Models;
-using AccountManagement.API.Repositories;
+﻿using AccountManagement.Models;
+using AccountManagement.Repositories;
 using AccountManagement.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AccountManagement.API.Controllers
+namespace AccountManagement.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     

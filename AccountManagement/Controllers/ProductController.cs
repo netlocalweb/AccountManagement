@@ -1,6 +1,7 @@
-﻿using AccountManagement.API.Models;
-using AccountManagement.API.Repositories;
+﻿using AccountManagement.Models;
+using AccountManagement.Repositories;
 using AccountManagement.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace AccountManagement.API.Controllers
+namespace AccountManagement.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase

@@ -1,4 +1,4 @@
-﻿using AccountManagement.API.Models;
+﻿using AccountManagement.Models;
 using AccountManagement.Models.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;

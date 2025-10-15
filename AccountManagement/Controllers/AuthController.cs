@@ -1,13 +1,15 @@
-﻿using AccountManagement.API.DTOs;
-using AccountManagement.API.Repositories;
-using AccountManagement.API.Validation;
+﻿using AccountManagement.DTOs;
+using AccountManagement.Repositories;
+using AccountManagement.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
-namespace AccountManagement.API.Controllers
+namespace AccountManagement.Controllers
 {
+    [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -29,7 +31,7 @@ namespace AccountManagement.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);//if the login dto is invalid it returns 400 bad request
+                return BadRequest(ModelState);//if the login dto is invalid it returns 400 bad request 
 
             //Checks if user exists
             var client = await clientRepository.GetByUsernameAsync(dto.Username);
@@ -45,7 +47,6 @@ namespace AccountManagement.API.Controllers
             var token = jwtService.GenerateToken(client);
             return Ok(new { Token = token });
         }
-
        
             }
         }

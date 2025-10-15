@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using AccountManagement.API.Models;
+using AccountManagement.Models;
 
-namespace AccountManagement.API.Data
+namespace AccountManagement.Data
 {
     public class AppDbContext : DbContext
     {

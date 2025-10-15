@@ -1,6 +1,6 @@
-﻿using AccountManagement.API.Data;
-using AccountManagement.API.Models;
-using AccountManagement.API.Repositories;
+﻿using AccountManagement.Data;
+using AccountManagement.Models;
+using AccountManagement.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Data;

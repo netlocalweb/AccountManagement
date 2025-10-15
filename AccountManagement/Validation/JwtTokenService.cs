@@ -3,10 +3,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using AccountManagement.API.Models;
+using AccountManagement.Models;
 using Microsoft.Extensions.Configuration;
 
-namespace AccountManagement.API.Validation
+namespace AccountManagement.Validation
 {
 
 
@@ -25,7 +25,7 @@ namespace AccountManagement.API.Validation
             var expiryMinutes = Convert.ToDouble(jwt["ExpiryMinutes"]);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-
+            
             var claims = new[]
             {
                 new Claim("Id", client.Id.ToString()),

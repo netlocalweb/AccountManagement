@@ -1,4 +1,4 @@
-﻿using AccountManagement.API.Models;
+﻿using AccountManagement.Models;
 using System;
 
 namespace AccountManagement.Models.DTOs

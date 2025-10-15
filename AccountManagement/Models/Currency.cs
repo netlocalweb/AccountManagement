@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Security.Permissions;
 
-namespace AccountManagement.API.Models
+namespace AccountManagement.Models
 {
     public class Currency
     {
+        [Key]
         public  int Id { get; set; }
 
         [Required]
@@ -23,7 +24,7 @@ namespace AccountManagement.API.Models
         [Required]
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
-        public  DateTime? DateModified { get; set; }
+        public  DateTime? DateModified { get; set; } = DateTime.UtcNow;
 
     }
 }

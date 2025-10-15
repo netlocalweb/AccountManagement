@@ -3,10 +3,11 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 
-namespace AccountManagement.API.Models
+namespace AccountManagement.Models
 {
     public class Category
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
@@ -18,9 +19,9 @@ namespace AccountManagement.API.Models
         public string Description { get; set; }
 
         [Required]
-        public DateTime DateCreated { get; set; }
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
-        public DateTime? DateModified { get; set; }
+        public DateTime? DateModified { get; set; } = DateTime.UtcNow;
 
 
 

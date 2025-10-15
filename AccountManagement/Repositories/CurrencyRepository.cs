@@ -1,11 +1,11 @@
-﻿using AccountManagement.API.Data;
-using AccountManagement.API.Models;
+﻿using AccountManagement.Data;
+using AccountManagement.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AccountManagement.API.Repositories
+namespace AccountManagement.Repositories
 {
     public class CurrencyRepository : ICurrencyRepository
     {
