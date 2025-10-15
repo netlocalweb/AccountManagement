@@ -14,12 +14,6 @@ namespace Repository
         public BankTransactionRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
         }
-
-        public void CreateBankTransaction(BankTransaction bankTransaction)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<BankTransaction>> GetAllBankTransactionAsync(bool trackchanges) => 
             await FindAll(trackchanges)
             .ToListAsync();
@@ -27,6 +21,7 @@ namespace Repository
             await FindByCondition(bt => bt.Id.Equals(id), trackchanges)
             .FirstOrDefaultAsync();
 
+        public void CreateBankTransaction(BankTransaction bankTransaction) => Create(bankTransaction);
         public void UpdateBankTransaction(BankTransaction bankTransactionn) => Update(bankTransactionn);
         public void DeleteBankTransaction(BankTransaction bankTransaction) => Delete(bankTransaction);
     }

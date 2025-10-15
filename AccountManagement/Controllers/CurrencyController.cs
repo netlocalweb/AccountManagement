@@ -51,22 +51,15 @@ namespace AccountManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCurrency([FromBody] CurrencyCreationDto currencyDto)
         {
-            if (currencyDto == null)
-                return BadRequest("Currency object is null . ");
+            currencyDto.Code = currencyDto.Code.ToUpper().Trim();//upercase
 
-            var codeUpper = currencyDto.Code.ToUpper();
-            var existing = await _repositoryManager.Currency.GetCurrencyByCodeAsync(codeUpper, trackChanges: false);
-            if (existing != null)
-                return Conflict("currency code alredy exists.");
-
+            if (currencyDto is null)
+                return BadRequest("Currency code must be unique!");
+            
             var currency = _mapper.Map<Currency>(currencyDto);
-            currency.DateCreated = DateTime.UtcNow;
-
             _repositoryManager.Currency.CreateCurrency(currency);
             await _repositoryManager.SaveAsync();
-
-            var createdDto = _mapper.Map<CurrencyDto>(currency);
-            return CreatedAtAction(nameof(GetCurrencyById), new { id = currency.Id }, createdDto);
+            return Ok(currency);
         }
 
     }

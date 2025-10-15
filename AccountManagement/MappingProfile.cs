@@ -16,6 +16,10 @@ namespace AccountManagement
             CreateMap<UpdateClientDto, Client>();
             CreateMap<Currency, CurrencyDto>().ReverseMap();
             CreateMap<CurrencyCreationDto , Currency>().ReverseMap();
+            CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<CategoryForCreationDto, Category>().ReverseMap();
+            CreateMap<CategoryForUpdateDto , Category>().ReverseMap();
+
         }
     }
 }

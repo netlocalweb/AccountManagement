@@ -24,12 +24,12 @@ namespace Repository
             _categoryRepository = new Lazy<ICategoryRepository>(() => new CategoryRepository(_context));
             _productRepository = new Lazy<IProductRepository>(() => new ProductRepository(_context));
             _bankAccountRepository = new Lazy<IBankAccountRepository>(() => new BankAccountRepository(_context));
-            _bankTransactionRepository = new Lazy<IBankTransactionRepository>>(() => new BankTransactionRepository(_context));
+            _bankTransactionRepository = new Lazy<IBankTransactionRepository>(() => new BankTransactionRepository(_context));
         }
         public IClientRepository Client => _clientRepository.Value;
         public ICurrencyRepository Currency => _currencyRepository.Value;
         public ICategoryRepository Category => _categoryRepository.Value;
-        public IProductRepository Product => _productRepository.Value;
+        public IProductRepository Products => _productRepository.Value;
         public IBankAccountRepository BankAccount => _bankAccountRepository.Value;
         public IBankTransactionRepository BankTransaction => _bankTransactionRepository.Value;
 
