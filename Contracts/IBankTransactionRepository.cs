@@ -12,7 +12,6 @@ namespace Contracts
         Task<IEnumerable<BankTransaction>> GetAllBankTransactionAsync(bool trackchanges);
         Task<BankTransaction?> GetBankTransactionsByIdAsync(int id, bool trackchanges);
         void CreateBankTransaction(BankTransaction bankTransaction);
-        void DeleteBankTransaction(BankTransaction bankTransaction);
-        void UpdateBankTransaction(BankTransaction bankTransaction);
+
     }
 }

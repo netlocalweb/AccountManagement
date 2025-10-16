@@ -59,7 +59,7 @@ namespace AccountManagement.Controllers
             var client = await GetClientAndCheckIfExists(id ,trackChanges: true);
 
             if (updateClient == null)
-                return BadRequest("Update Data is reuired.");
+                return BadRequest("Update Data is required.");
 
             if (!string.IsNullOrEmpty(updateClient.FirstName) ||
                 !string.IsNullOrEmpty(updateClient.LastName) ||

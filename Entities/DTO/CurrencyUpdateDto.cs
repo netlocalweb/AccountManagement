@@ -14,7 +14,7 @@ namespace Entities.DTO
         public string Code { get; set; }
 
         [Required(ErrorMessage = "Description is required.")]
-        public string Desccription { get; set; }
+        public string Description { get; set; }
 
         [Required(ErrorMessage = "Exchange rate is required.")]
         [Range(0.0001, double.MaxValue, ErrorMessage = "Exchange rate must be greater than zero.")]

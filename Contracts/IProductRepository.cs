@@ -12,7 +12,7 @@ namespace Contracts
         Task<IEnumerable<Products>> GetAllProductsAsync(bool trackchanges);
         Task<Products?>GetProductsByIdAsync(int id,bool trackchanges);
         //void CreateProduct(Products product);
-        //void DeleteProduct(Products product);
+        void DeleteProduct(Products product);
         //void UpdateProduct(Products product);
 
 

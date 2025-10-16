@@ -37,9 +37,9 @@ namespace AccountManagement.Controllers
         //GET:api/category/{id}
         [HttpGet]
         [Route("{id:int}")]
-        public async Task<IActionResult>GetCategoryById(int id)
+        public async Task<IActionResult> GetCategoryById(int id)
         {
-            var category = await _repositoryManager.Category.GetCategoryByIdAsync( id , trackChanges : false);
+            var category = await _repositoryManager.Category.GetCategoryByIdAsync(id, trackChanges: false);
             if (category == null)
                 return NotFound();
 
@@ -50,10 +50,12 @@ namespace AccountManagement.Controllers
         //Create Category
         //POST:api/category
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] CategoryForCreationDto categoryDto )
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryForCreationDto categoryDto)
         {
             if (categoryDto == null)
                 return BadRequest("Category is null");
+
+            categoryDto.Code = categoryDto.Code.ToUpper();
 
             var category = _mapper.Map<Category>(categoryDto);
             category.DateCreated = DateTime.Now;
@@ -62,7 +64,49 @@ namespace AccountManagement.Controllers
             await _repositoryManager.SaveAsync();
 
             var categoryToReturn = _mapper.Map<CategoryDto>(category);
-            return CreatedAtAction(nameof(GetCategoryById),new {id = categoryToReturn.Id},categoryToReturn);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = categoryToReturn.Id }, categoryToReturn);
+
+        }
+
+        //Update Category
+        //PUT:api/category
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult>UpdateCategory(int id, [FromBody] CategoryForUpdateDto categoryDto)
+        {
+            var category = await _repositoryManager.Category.GetCategoryByIdAsync(id, trackChanges: true);
+            if (category == null)
+                return NotFound();
+
+            if(category.Code.ToUpper() != categoryDto.Code.ToUpper())
+            {
+                var existing = _repositoryManager.Category
+                    .GetCategoryByIdAsync(id, trackChanges: true);
+                if (existing == null)
+                    return Conflict($"Category with code '{category.Code}' alredy exists.");
+            }
+            category.Code = categoryDto.Code.ToUpper();
+            category.Description = categoryDto.Description;
+            category.DateModified = DateTime.Now;
+
+            _repositoryManager.SaveAsync();
+            return NoContent();
+        }
+
+        //Delete Category
+        //DELETE:api/category
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult>DeleteCategory(int id)
+        {
+            var category = await _repositoryManager.Category.GetCategoryByIdAsync(id ,trackChanges :false);
+            if (category == null)
+                return NotFound();
+
+            _repositoryManager.Category.DeleteCategory(category);
+            await _repositoryManager.SaveAsync();
+
+            return NoContent();
 
         }
     }

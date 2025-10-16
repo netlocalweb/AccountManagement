@@ -29,6 +29,5 @@ namespace Repository
 
         public void CreateBankAccunt(BankAccount bankAccount) => Create(bankAccount);
         public void UpdateBankAccount(BankAccount bankAccount) => Update(bankAccount);
-        public void DeleteBankAccount(BankAccount bankAccount) => Delete(bankAccount);
     }
 }

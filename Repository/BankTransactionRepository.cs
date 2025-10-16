@@ -22,7 +22,6 @@ namespace Repository
             .FirstOrDefaultAsync();
 
         public void CreateBankTransaction(BankTransaction bankTransaction) => Create(bankTransaction);
-        public void UpdateBankTransaction(BankTransaction bankTransactionn) => Update(bankTransactionn);
-        public void DeleteBankTransaction(BankTransaction bankTransaction) => Delete(bankTransaction);
+
     }
 }

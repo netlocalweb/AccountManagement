@@ -51,15 +51,36 @@ namespace AccountManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCurrency([FromBody] CurrencyCreationDto currencyDto)
         {
-            currencyDto.Code = currencyDto.Code.ToUpper().Trim();//upercase
+            if (currencyDto == null)
+                return BadRequest("Currency is null");
 
-            if (currencyDto is null)
-                return BadRequest("Currency code must be unique!");
-            
+            currencyDto.Code = currencyDto.Code.ToUpper();
+
             var currency = _mapper.Map<Currency>(currencyDto);
+            currency.DateCreated = DateTime.UtcNow;
+
             _repositoryManager.Currency.CreateCurrency(currency);
             await _repositoryManager.SaveAsync();
-            return Ok(currency);
+
+            var currencyToReturn = _mapper.Map<CurrencyDto>(currency);
+            return CreatedAtAction(nameof(GetCurrencyById), new { id = currencyToReturn.Id }, currencyToReturn);
+
+        }
+
+        //Delete currency 
+        //DELETE:api/currency
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult>DeleteCurrency(int id)
+        {
+            var currency = await _repositoryManager.Currency.GetCurrencyByIdAsync(id , trackChanges: false);
+            if ( currency == null)
+                return NotFound();
+
+            _repositoryManager.Currency.DeleteCurrency(currency);
+            await _repositoryManager.SaveAsync();
+
+            return NoContent();
         }
 
     }
