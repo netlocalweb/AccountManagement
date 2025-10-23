@@ -11,7 +11,9 @@ namespace Contracts
     {
         Task<IEnumerable<BankAccount>> GetAllBAnkAccountsAsync(bool trackchanges);
         Task<BankAccount?> GetBankAccountsByIdAsync(int id ,bool trackchanges);
+        Task<bool>CodeExistsForClientAsync(string code, int clientId );
         void CreateBankAccount(BankAccount bankAccount);
         void UpdateBankAccount(BankAccount bankAccount);
+
     }
 }

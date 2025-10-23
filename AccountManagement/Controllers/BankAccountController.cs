@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.DTO;
+using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ namespace AccountManagement.Controllers
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
         private readonly ILogger<BankAccountController> _logger;
-        public BankAccountController(IRepositoryManager repositoryManager,IMapper mapper,ILogger<BankAccountController> logger)
+        public BankAccountController(IRepositoryManager repositoryManager, IMapper mapper, ILogger<BankAccountController> logger)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
@@ -37,34 +38,62 @@ namespace AccountManagement.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> GetBankAccountById(int id)
         {
-            var account = await _repositoryManager.BankAccount.GetBankAccountsByIdAsync( id ,trackchanges: false);
+            var account = await _repositoryManager.BankAccount.GetBankAccountsByIdAsync(id, trackchanges: false);
             if (account == null)
                 return NotFound("Bank account not found.");
+
 
             var accountDto = _mapper.Map<BankAccountDto>(account);
             return Ok(accountDto);
 
         }
 
-        //Create bank account 
-        //POST:api/bankaccount
-        //[HttpPost]
-        //public async Task<IActionResult> CreateBankAccount([FromBody] BankAccountForCreationDto bankaccount)
-        //{
-        //    if (bankaccount == null)
-        //        return BadRequest("Bank account is null");
+        //Create bank account
+        //POST:api/bankaccounts
+        public async Task<IActionResult> CreateBankAccount([FromBody] BankAccountForCreationDto bankAccount)
+        {
+            if (await _repositoryManager.BankAccount.CodeExistsForClientAsync(bankAccount.Code, bankAccount.ClientId))
+                return BadRequest("This code alredy exists.");
 
-        //    //Kontroll nese ekziston nje llogari me te jejtin cod per te njejtin klient 
-        //    var existingAccount = await _repositoryManager.BankAccount
-        //        .FindByCondition(a => a.ClientId == bankaccount.ClientId && a.Code == bankaccount.Code, trackChanges: false)
-        //        .FirstOrDefaultAsync();
-        //    if (existingAccount != null)
-        //        return BadRequest("A bank account with this code alredy exists for the same client.");
+            var account = _mapper.Map<BankAccount>(bankAccount);
+            _repositoryManager.BankAccount.CreateBankAccount(account);
+            await _repositoryManager.SaveAsync();
 
-        //    _repositoryManager.BankAccount.CreateBankAccount();
+            return CreatedAtAction(nameof(GetBankAccountById), new { id = account.Id }, _mapper.Map<BankAccountForCreationDto>(account));
+        }
 
-        //}
+        //Update bank account
+        //UPDATE:api/bankaccounts/{id}
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult> UpdateBankAccount(int id, [FromBody] BankAccountForUpdateDto bankAccount)
+        {
+            var account = await _repositoryManager.BankAccount.GetBankAccountsByIdAsync(id, trackchanges: true);
 
+            if (account == null)
+                return NotFound("Bank account not found.");
 
+            _mapper.Map(bankAccount, account);
+            _repositoryManager.BankAccount.UpdateBankAccount(account);
+            await _repositoryManager.SaveAsync();
+
+            return NoContent();
+        }
+
+        //Delete bank account
+        //DELETE:api/bankaccounts/{id}
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult> SoftDelete(int id)
+        {
+            var account = await _repositoryManager.BankAccount.GetBankAccountsByIdAsync(id, trackchanges: true);
+            if (account == null)
+                return NotFound("Bank account not found.");
+
+            account.IsActtive = false;
+            _repositoryManager.BankAccount.UpdateBankAccount(account);
+            await _repositoryManager.SaveAsync();
+            return NoContent();
+        }
     }
 }

@@ -25,9 +25,7 @@ namespace Repository
             await FindByCondition(p => p.Id.Equals(id), trackchanges)
             .Include(p => p.Category)
             .SingleOrDefaultAsync();
-        public void CreateProduct(Products product) => Create(product);
-        public void UpdateProduct(Products product) => Update(product);
-        public void DeleteProduct(Products product) => Delete(product);
+
 
     }
 }

@@ -15,6 +15,12 @@ namespace Repository
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new ClientConfiguration());
+            modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new BankAccountConfiguration());
+            modelBuilder.ApplyConfiguration(new BankTransactionConfiguration());
+
 
         }
         public DbSet<User> Users { get; set; }

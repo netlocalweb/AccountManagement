@@ -14,11 +14,13 @@ namespace AccountManagement.Controllers
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductsController> _logger;
-        public ProductsController(IRepositoryManager repositoryManager,IMapper mapper,ILogger<ProductsController> logger)
+        private readonly IWebHostEnvironment _env;
+        public ProductsController(IRepositoryManager repositoryManager,IMapper mapper,ILogger<ProductsController> logger,IWebHostEnvironment env)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
             _logger = logger;
+            _env = env;
         }
 
         //Get products 
@@ -45,29 +47,21 @@ namespace AccountManagement.Controllers
             return Ok(productsDto);
         }
 
-        //Create product
-        //POST:api/product
+        ////Create product
+        ////POST:api/product
         //[HttpPost]
         //public async Task<IActionResult> CreateProduct([FromBody] ProductForCreationDto productDto)
         //{
-        //    if (productDto == null)
-        //        return BadRequest("Product is null");
-        //    productDto.Name
+
         //}
 
-        //Delete product
-        //DELETE:api/products
-        [HttpDelete]
-        [Route("{id:int}")]
-        public async Task<IActionResult>DeleteProduct(int id)
-        {
-            var product = await _repositoryManager.Products.GetProductsByIdAsync(id, trackchanges: false);
-            if (product == null)
-                return NotFound();
+        ////Delete product
+        ////DELETE:api/products
+        //[HttpDelete]
+        //[Route("{id:int}")]
+        //public async Task<IActionResult>DeleteProduct(int id)
+        //{
 
-            _repositoryManager.Products.DeleteProduct(product);
-            await _repositoryManager.SaveAsync();
-            return NoContent();
-        }
+        //}
     }
 }

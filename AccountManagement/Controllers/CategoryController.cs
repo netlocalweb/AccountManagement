@@ -74,22 +74,19 @@ namespace AccountManagement.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult>UpdateCategory(int id, [FromBody] CategoryForUpdateDto categoryDto)
         {
+            if (categoryDto == null)
+                return BadRequest("Category is null.");
+
             var category = await _repositoryManager.Category.GetCategoryByIdAsync(id, trackChanges: true);
             if (category == null)
-                return NotFound();
+                return NotFound($"Category with id {id} not found.");
 
-            if(category.Code.ToUpper() != categoryDto.Code.ToUpper())
-            {
-                var existing = _repositoryManager.Category
-                    .GetCategoryByIdAsync(id, trackChanges: true);
-                if (existing == null)
-                    return Conflict($"Category with code '{category.Code}' alredy exists.");
-            }
-            category.Code = categoryDto.Code.ToUpper();
+            var newCode = categoryDto.Code.ToUpper();
+            category.Code = newCode;
             category.Description = categoryDto.Description;
             category.DateModified = DateTime.Now;
 
-            _repositoryManager.SaveAsync();
+            await _repositoryManager.SaveAsync();
             return NoContent();
         }
 
@@ -109,5 +106,6 @@ namespace AccountManagement.Controllers
             return NoContent();
 
         }
+
     }
 }

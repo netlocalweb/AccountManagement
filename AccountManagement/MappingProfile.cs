@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Entities.DTO;
+using Entities.Enums;
 using Entities.Models;
 using Microsoft.OpenApi.Writers;
 
@@ -34,7 +35,8 @@ namespace AccountManagement
 
             CreateMap<BankTransaction, BankTransactionDto>().ReverseMap()
             .ForMember(dest =>dest.Action,opt => opt.MapFrom(src =>src.Action.ToString()));
-            CreateMap<BankTransactionForCreation, BankTransaction>().ReverseMap();
+            CreateMap<BankTransactionForCreation, BankTransaction>().ReverseMap()
+            .ForMember(dest => dest.Action, opt => opt.MapFrom(src => (TransactionAction)src.Action));
 
 
         }
