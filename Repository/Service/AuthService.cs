@@ -26,8 +26,6 @@ namespace AccountManagement.Service
         private readonly IRepositoryManager _repositoryManager;
         private readonly ILoggerManager _loggerManager;
         
-
-
         public AuthService(UserManager<User> userManager , IMapper mapper, IRepositoryManager repositoryManager, ILoggerManager loggerManager , IConfiguration configuration)
         {
             _userManager = userManager;
@@ -121,7 +119,6 @@ namespace AccountManagement.Service
                 );
             return tokenOptions;
         }
-        
 
     }
 }

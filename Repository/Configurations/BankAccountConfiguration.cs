@@ -30,9 +30,6 @@ namespace Repository.Configurations
             builder.Property(b => b.DateCreated)
                 .IsRequired();
 
-            builder.Property(b => b.DateCreated)
-                .IsRequired();
-
             builder.HasIndex(b => new { b.ClientId, b.Code })
                 .IsUnique();
 
@@ -44,7 +41,7 @@ namespace Repository.Configurations
 
             //realtioship with Currency
             builder.HasOne(b => b.Currency)
-                .WithMany()
+                .WithMany(c => c.BankAccounts)
                 .HasForeignKey(b => b.CurrencyId)
                 .OnDelete(DeleteBehavior.Restrict);
 

@@ -67,6 +67,27 @@ namespace AccountManagement.Controllers
 
         }
 
+        //Update currency
+        //PUT:api/currency/{id}
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult> UpdateCurrency(int id, [FromBody] CurrencyUpdateDto currencyDto)
+        {
+            var currency = await _repositoryManager.Currency.GetCurrencyByIdAsync(id, trackChanges: true);
+            if (currency == null)
+                return NotFound("Currency not found. ");
+
+            currency.Description = currencyDto.Description;
+            currency.ExchangeRate = currencyDto.ExchangeRate;
+            currency.Code = currencyDto.Code.ToUpper();
+            currency.DateModified = DateTime.UtcNow;
+
+            _repositoryManager.Currency.UpdateCurrency(currency);
+            await _repositoryManager.SaveAsync();
+            return Ok(_mapper.Map<CurrencyDto>(currency));
+            
+        }
+
         //Delete currency 
         //DELETE:api/currency
         [HttpDelete]

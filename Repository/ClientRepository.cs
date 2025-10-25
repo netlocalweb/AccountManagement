@@ -38,5 +38,11 @@ namespace Repository
             Update(client);
         }
 
+        public async Task<Client?> GetClientByUserIdAsync(string userId, bool trackChanges)
+        {
+            return await FindByCondition(c => c.UserId.Equals(userId), trackChanges)
+                        .Include(c => c.User)
+                        .SingleOrDefaultAsync();
+        }
     }
 }

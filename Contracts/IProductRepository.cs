@@ -12,7 +12,7 @@ namespace Contracts
         Task<IEnumerable<Products>> GetAllProductsAsync(bool trackchanges);
         Task<Products?>GetProductsByIdAsync(int id,bool trackchanges);
         
-
+        Task<Products?>GetProductByNameAsync(string name,bool trackchanges);
 
     }
 }

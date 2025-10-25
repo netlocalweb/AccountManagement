@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Contracts
 {
     public interface IDapperRepository
     {
-        //IEnumerable<TestEntity> GetAll();
-        //TestEntity GetById(int id);
+        Task<IEnumerable<ClientReports>> GetClientReportsAsync();
+ 
     }
 }

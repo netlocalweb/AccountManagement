@@ -14,3 +14,4 @@ namespace Entities.DTO
         public DateTime? DateModified { get; set; }
     }
 }
+

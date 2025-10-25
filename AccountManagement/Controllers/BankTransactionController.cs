@@ -67,7 +67,7 @@ namespace AccountManagement.Controllers
                 return BadRequest("Invalid transaction action.");
             }
             //update modificationd date and save transaction
-            account.DateModefied = DateTime.UtcNow;
+            account.DateModified = DateTime.UtcNow;
 
             _repositoryManager.BankTransaction.CreateBankTransaction(transaction);
             await _repositoryManager.SaveAsync();

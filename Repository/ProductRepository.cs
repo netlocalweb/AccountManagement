@@ -21,6 +21,12 @@ namespace Repository
             .OrderBy(p => p.Name)
             .ToListAsync();
 
+        public async Task<Products?> GetProductByNameAsync(string name, bool trackchanges)
+        {
+          return  await FindByCondition(p => p.Name.ToLower() == name.ToLower(),trackchanges)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<Products?> GetProductsByIdAsync(int id, bool trackchanges) =>
             await FindByCondition(p => p.Id.Equals(id), trackchanges)
             .Include(p => p.Category)

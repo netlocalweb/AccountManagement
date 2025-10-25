@@ -18,14 +18,12 @@ namespace Repository
             await FindAll(trackChanges)
             .OrderBy(c => c.Code)
             .ToListAsync();
-
-        public async Task<Currency> GetCurrencyByCodeAsync(string code, bool trackChanges) =>
-            await FindByCondition(c => c.Code == code.ToUpper() , trackChanges)
-            .SingleOrDefaultAsync();
-
+        
         public async Task<Currency> GetCurrencyByIdAsync(int id, bool trackChanges) =>
             await FindByCondition(c => c.Id == id, trackChanges)
             .SingleOrDefaultAsync();
+
+
         public void CreateCurrency(Currency currency) => Create(currency);
         public void DeleteCurrency(Currency currency) => Delete(currency);
 

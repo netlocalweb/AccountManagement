@@ -28,8 +28,7 @@ namespace Entities.Models
         [Required]
         public DateTime DateCreated { get; set; } = DateTime.Now;
 
-        [Required]
-        public DateTime DateModefied { get; set; }
+        public DateTime DateModified { get; set; } 
 
 
         public int CurrencyId { get; set; }

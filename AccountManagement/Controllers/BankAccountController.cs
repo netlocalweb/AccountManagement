@@ -1,11 +1,15 @@
-﻿using AutoMapper;
+﻿using AccountManagement.Service;
+using AutoMapper;
 using Contracts;
 using Entities.DTO;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 
 namespace AccountManagement.Controllers
 {
@@ -16,11 +20,13 @@ namespace AccountManagement.Controllers
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
         private readonly ILogger<BankAccountController> _logger;
-        public BankAccountController(IRepositoryManager repositoryManager, IMapper mapper, ILogger<BankAccountController> logger)
+        private readonly IAuthService _authService;
+        public BankAccountController(IRepositoryManager repositoryManager, IMapper mapper, ILogger<BankAccountController> logger, IAuthService authService)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
             _logger = logger;
+            _authService = authService;
         }
 
         //Get all bank accounts 
@@ -50,11 +56,21 @@ namespace AccountManagement.Controllers
 
         //Create bank account
         //POST:api/bankaccounts
+        [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateBankAccount([FromBody] BankAccountForCreationDto bankAccount)
         {
-            if (await _repositoryManager.BankAccount.CodeExistsForClientAsync(bankAccount.Code, bankAccount.ClientId))
+            // Get logged in userId
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var client = _repositoryManager.Client.GetClientByUserIdAsync(userId,false);
+            if (client == null)
+                return BadRequest("Client dosen't exists");
+
+            if (await _repositoryManager.BankAccount.CodeExistsForClientAsync(bankAccount.Code, client.Result.Id))
                 return BadRequest("This code alredy exists.");
 
+            bankAccount.ClientId = client.Result.Id;
             var account = _mapper.Map<BankAccount>(bankAccount);
             _repositoryManager.BankAccount.CreateBankAccount(account);
             await _repositoryManager.SaveAsync();
@@ -91,6 +107,7 @@ namespace AccountManagement.Controllers
                 return NotFound("Bank account not found.");
 
             account.IsActtive = false;
+            account.DateModified = DateTime.UtcNow;
             _repositoryManager.BankAccount.UpdateBankAccount(account);
             await _repositoryManager.SaveAsync();
             return NoContent();
