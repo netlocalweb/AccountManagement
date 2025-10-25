@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.Models
 {
@@ -23,12 +18,12 @@ namespace Entities.Models
         public decimal Balance { get; set; }
 
         [Required]
-        public bool IsActtive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         [Required]
         public DateTime DateCreated { get; set; } = DateTime.Now;
 
-        public DateTime DateModified { get; set; } 
+        public DateTime? DateModified { get; set; }
 
 
         public int CurrencyId { get; set; }

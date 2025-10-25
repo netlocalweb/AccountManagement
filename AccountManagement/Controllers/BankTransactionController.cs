@@ -40,7 +40,7 @@ namespace AccountManagement.Controllers
             var transaction = _mapper.Map<BankTransaction>(bankTransactionDto);
 
             var account = await _repositoryManager.BankAccount
-                .GetBankAccountsByIdAsync(bankTransactionDto.BankAccountId, trackchanges: false);
+                .GetBankAccountByIdAsync(bankTransactionDto.BankAccountId, trackchanges: false);
 
             if (account == null)
             {
@@ -68,6 +68,7 @@ namespace AccountManagement.Controllers
             }
             //update modificationd date and save transaction
             account.DateModified = DateTime.UtcNow;
+            _repositoryManager.BankAccount.Update(account);
 
             _repositoryManager.BankTransaction.CreateBankTransaction(transaction);
             await _repositoryManager.SaveAsync();

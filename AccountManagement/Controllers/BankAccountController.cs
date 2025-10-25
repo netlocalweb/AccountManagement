@@ -34,7 +34,7 @@ namespace AccountManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllBankAccounts()
         {
-            var account = await _repositoryManager.BankAccount.GetAllBAnkAccountsAsync(trackchanges: false);
+            var account = await _repositoryManager.BankAccount.GetAllBankAccountsAsync(trackchanges: false);
             var accountDto = _mapper.Map<IEnumerable<BankAccountDto>>(account);
             return Ok(accountDto);
         }
@@ -44,7 +44,7 @@ namespace AccountManagement.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> GetBankAccountById(int id)
         {
-            var account = await _repositoryManager.BankAccount.GetBankAccountsByIdAsync(id, trackchanges: false);
+            var account = await _repositoryManager.BankAccount.GetBankAccountByIdAsync(id, trackchanges: false);
             if (account == null)
                 return NotFound("Bank account not found.");
 
@@ -67,7 +67,9 @@ namespace AccountManagement.Controllers
             if (client == null)
                 return BadRequest("Client dosen't exists");
 
-            if (await _repositoryManager.BankAccount.CodeExistsForClientAsync(bankAccount.Code, client.Result.Id))
+            var exists = await _repositoryManager.BankAccount.CodeExistsForClientAsync(bankAccount.Code, client.Result.Id);
+
+            if (exists == true)
                 return BadRequest("This code alredy exists.");
 
             bankAccount.ClientId = client.Result.Id;
@@ -84,7 +86,7 @@ namespace AccountManagement.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> UpdateBankAccount(int id, [FromBody] BankAccountForUpdateDto bankAccount)
         {
-            var account = await _repositoryManager.BankAccount.GetBankAccountsByIdAsync(id, trackchanges: true);
+            var account = await _repositoryManager.BankAccount.GetBankAccountByIdAsync(id, trackchanges: true);
 
             if (account == null)
                 return NotFound("Bank account not found.");
@@ -102,11 +104,11 @@ namespace AccountManagement.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> SoftDelete(int id)
         {
-            var account = await _repositoryManager.BankAccount.GetBankAccountsByIdAsync(id, trackchanges: true);
+            var account = await _repositoryManager.BankAccount.GetBankAccountByIdAsync(id, trackchanges: true);
             if (account == null)
                 return NotFound("Bank account not found.");
 
-            account.IsActtive = false;
+            account.IsActive = false;
             account.DateModified = DateTime.UtcNow;
             _repositoryManager.BankAccount.UpdateBankAccount(account);
             await _repositoryManager.SaveAsync();

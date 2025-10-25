@@ -26,7 +26,7 @@ namespace Entities.Models
         public string Email { get; set; } = null!;
 
         [Required]
-        public DateTime Brirthdate { get; set; }
+        public DateTime Birthdate { get; set; }
        
         [Required]
         [Phone]

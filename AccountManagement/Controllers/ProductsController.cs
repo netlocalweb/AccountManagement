@@ -50,8 +50,7 @@ namespace AccountManagement.Controllers
 
         //Get products by id
         //GET:api/products/{id}
-        [HttpGet]
-        [Route("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetProductById")]
         public async Task<IActionResult>GetProductsById(int id)
         {
             var product = await _repositoryManager.Products.GetProductsByIdAsync(id, trackchanges: false);
@@ -76,59 +75,48 @@ namespace AccountManagement.Controllers
         ////Create product
         ////POST:api/product
         [HttpPost]
-        public async Task<IActionResult> CreateProduct( [FromBody] ProductForCreationDto productDto)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateProduct([FromForm] ProductForCreationDto dto)
         {
-            if (productDto == null)
+            if (dto == null) 
                 return BadRequest("Product data is null.");
+            if (string.IsNullOrWhiteSpace(dto.Name)) 
+                return BadRequest("Product name is required.");
+            if (dto.Price < 0) 
+                return BadRequest("Price must be >= 0.");
 
-            if (string.IsNullOrWhiteSpace(productDto.Name))
-                return BadRequest("Prodct name is required.");
+            var existing = await _repositoryManager.Products.GetProductByNameAsync(dto.Name, false);
+            if (existing != null) 
+                return Conflict($"A product with name '{dto.Name}' already exists.");
 
-            //Checking if the product exists 
-            var existingProduct = await _repositoryManager.Products.GetProductByNameAsync(productDto.Name, trackchanges: false);
-
-            if (existingProduct == null)
-                return Conflict($"A product with the name '{productDto.Name}' alredy exists .");
-
-            var product = _mapper.Map<Products>(productDto);
+            var product = _mapper.Map<Products>(dto);
             product.DateCreated = DateTime.Now;
 
-            //Base64 image 
-            if (!string.IsNullOrEmpty(productDto.ImagePath))
+            if (dto.ImagePath != null)
             {
-                try
-                {
-                    var imageBytes = Convert.FromBase64String(productDto.ImagePath);
+                string folder = Path.Combine(_env.WebRootPath, "images");
+                Directory.CreateDirectory(folder);
 
-                    //Save a file 
-                    string folderPath = Path.Combine(_env.WebRootPath, "images");
-                    Directory.CreateDirectory(folderPath);
+                string fileName = Guid.NewGuid() + Path.GetExtension(dto.ImagePath.FileName);
+                string filePath = Path.Combine(folder, fileName);
 
-                    string fileNAme = Guid.NewGuid().ToString() + ".jpg";
-                    string filePath = Path.Combine(folderPath, fileNAme);
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await dto.ImagePath.CopyToAsync(stream);
 
-                    await System.IO.File.WriteAllBytesAsync(filePath, imageBytes);
-
-                    //Save relative path for saving 
-                    product.ImagePath = Path.Combine("images", fileNAme);
-                }
-                catch (FormatException)
-                {
-                    return BadRequest("Invalid image fromat.");
-                }
+                product.ImagePath = Path.Combine("images", fileName).Replace("\\", "/");
             }
+
             _repositoryManager.Products.Create(product);
             await _repositoryManager.SaveAsync();
 
-            var productToReturn = _mapper.Map<ProductsDto>(product);
-            return CreatedAtRoute("GetProductById", new { id = productToReturn.Id }, productToReturn);
-
+            var productDto = _mapper.Map<ProductsDto>(product);
+            return CreatedAtRoute("GetProductById", new { id = productDto.Id }, productDto);
         }
-        //Update product
-        //PUT:api/product/{id}
-        [HttpPut]
-        [Route("{id:int}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductForUpdateDto productDto)
+
+        // PUT: api/products/{id}
+        [HttpPut("{id:int}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductForUpdateDto productDto)
         {
             if (productDto == null)
                 return BadRequest("Product data is null.");
@@ -136,68 +124,71 @@ namespace AccountManagement.Controllers
             if (string.IsNullOrWhiteSpace(productDto.Name))
                 return BadRequest("Product name is required.");
 
-            var product = await _repositoryManager.Products.GetProductsByIdAsync(id ,trackchanges: true);
+            var product = await _repositoryManager.Products.GetProductsByIdAsync(id, trackchanges: true);
             if (product == null)
                 return NotFound($"Product with ID {id} not found.");
-            //Check if the name exists
-            var existingProduct = await _repositoryManager.Products.GetProductByNameAsync(productDto.Name, trackchanges: false);
 
+            // Check if the name exists for another product
+            var existingProduct = await _repositoryManager.Products.GetProductByNameAsync(productDto.Name, false);
             if (existingProduct != null && existingProduct.Id != id)
-                return Conflict($"A product with the name '{productDto.Name}' alredy exists.");
+                return Conflict($"A product with the name '{productDto.Name}' already exists.");
 
-            _mapper.Map(productDto,product);
-            product.DateModified = DateTime.Now;
+            // Map other fields
+            _mapper.Map(productDto, product);
 
-            //Base64 image replecement 
-            if (!string.IsNullOrEmpty(productDto.ImagePath))
+            // Handle image file replacement
+            if (productDto.ImagePath != null)
             {
-                try
+                // Delete old image if exists
+                if (!string.IsNullOrEmpty(product.ImagePath))
                 {
-                    if (!string.IsNullOrEmpty(productDto.ImagePath))
-                    {
-                        var oldImagePAth = Path.Combine(_env.WebRootPath, productDto.ImagePath);
-                        if (System.IO.File.Exists(oldImagePAth))
-                            System.IO.File.Delete(oldImagePAth);
-                    }
-
-                    //THe new image
-                    var imageBytes = Convert.FromBase64String(productDto.ImagePath);
-
-                    string folderPath = Path.Combine(_env.WebRootPath, "image");
-                    Directory.CreateDirectory(folderPath);
-
-                    string fileName = Guid.NewGuid().ToString() + ".jpg";
-                    string filePath = Path.Combine(folderPath, fileName);
-
-                    await System.IO.File.WriteAllBytesAsync(filePath, imageBytes);
-                    product.ImagePath = Path.Combine("images", fileName);
+                    var oldPath = Path.Combine(_env.WebRootPath, product.ImagePath);
+                    if (System.IO.File.Exists(oldPath))
+                        System.IO.File.Delete(oldPath);
                 }
-                catch (FormatException)
+
+                // Save new image
+                string folderPath = Path.Combine(_env.WebRootPath, "images");
+                Directory.CreateDirectory(folderPath);
+
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(productDto.ImagePath.FileName);
+                string filePath = Path.Combine(folderPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    return BadRequest("Invalid image format.");
+                    await productDto.ImagePath.CopyToAsync(stream);
                 }
+
+                product.ImagePath = Path.Combine("images", fileName).Replace("\\", "/");
             }
-                await _repositoryManager.SaveAsync();
-                return NoContent();
-            }
+
+            await _repositoryManager.SaveAsync();
+            return NoContent();
+        }
 
 
         ////Delete product
         ////DELETE:api/products
-        [HttpDelete]
-        [Route("{id:int}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _repositoryManager.Products.GetProductsByIdAsync(id, trackchanges: false);
+            var product = await _repositoryManager.Products.GetProductsByIdAsync(id, false);
             if (product == null)
                 return NotFound();
 
-            //Delete image 
-            if(!string.IsNullOrEmpty(product.ImagePath))
+            // Delete image safely
+            if (!string.IsNullOrEmpty(product.ImagePath))
             {
-                var fullPath = Path.Combine(_env.WebRootPath, product.ImagePath);
-                if (System.IO.File.Exists(fullPath))
-                    System.IO.File.Delete(fullPath);
+                try
+                {
+                    var fullPath = Path.Combine(_env.WebRootPath ?? string.Empty, product.ImagePath);
+                    if (System.IO.File.Exists(fullPath))
+                        System.IO.File.Delete(fullPath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning($"Could not delete image file: {ex.Message}");
+                }
             }
 
             _repositoryManager.Products.Delete(product);
@@ -205,5 +196,6 @@ namespace AccountManagement.Controllers
 
             return NoContent();
         }
+
     }
 }

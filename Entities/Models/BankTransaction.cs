@@ -11,10 +11,10 @@ namespace Entities.Models
 {
     public class BankTransaction
     {
-        public int  Id{ get; set; }
+        public int  Id { get; set; }
 
         [Required]
-        public int BankAccountId{ get; set; }
+        public int BankAccountId { get; set; }
         public BankAccount BankAccount { get; set; } = null!;
 
         [Required]

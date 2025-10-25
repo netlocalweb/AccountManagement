@@ -9,8 +9,8 @@ namespace Contracts
 {
     public interface IBankAccountRepository : IRepositoryBase<BankAccount>
     {
-        Task<IEnumerable<BankAccount>> GetAllBAnkAccountsAsync(bool trackchanges);
-        Task<BankAccount?> GetBankAccountsByIdAsync(int id ,bool trackchanges);
+        Task<IEnumerable<BankAccount>> GetAllBankAccountsAsync(bool trackchanges);
+        Task<BankAccount?> GetBankAccountByIdAsync(int id ,bool trackchanges);
         Task<bool>CodeExistsForClientAsync(string code, int clientId );
         void CreateBankAccount(BankAccount bankAccount);
         void UpdateBankAccount(BankAccount bankAccount);

@@ -15,18 +15,19 @@ namespace Repository
         {
         }
 
-        public async Task<IEnumerable<BankAccount>> GetAllBAnkAccountsAsync(bool trackchanges) =>
+        public async Task<IEnumerable<BankAccount>> GetAllBankAccountsAsync(bool trackchanges) =>
             await FindAll(trackchanges)
-            .Where(b => b.IsActtive)
+            .Where(b => b.IsActive)
             .Include(b => b.Client)
             .Include(b => b.Currency)
             .ToListAsync();
 
-        public async Task<BankAccount?> GetBankAccountsByIdAsync(int id, bool trackchanges) =>
-            await FindByCondition(b => b.Id.Equals(id), trackchanges)
-            .Include(b => b.Client)
-            .Include(b => b.Currency)
-            .FirstOrDefaultAsync( b => b.Id == id && b.IsActtive);
+        public async Task<BankAccount?> GetBankAccountByIdAsync(int id, bool trackChanges) =>
+            await FindByCondition(b => b.Id == id && b.IsActive, trackChanges)
+                .Include(b => b.Client)
+                .Include(b => b.Currency)
+                .FirstOrDefaultAsync();
+
 
         public void UpdateBankAccount(BankAccount bankAccount) => Update(bankAccount);
 
@@ -35,7 +36,7 @@ namespace Repository
         public async Task<bool> CodeExistsForClientAsync(string code, int clientId)
         {
             return await FindByCondition(b => b.Code == code && b.ClientId == clientId, false)
-                .AnyAsync(b => b.IsActtive);
+                .AnyAsync(b => b.IsActive);
         }
     }
 }

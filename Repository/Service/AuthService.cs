@@ -49,7 +49,7 @@ namespace AccountManagement.Service
                     LastName = userForRegistration.LastName,
                     Email = userForRegistration.Email,
                     Phone = userForRegistration.Phone,
-                    Brirthdate = userForRegistration.Brirthdate
+                    Birthdate = userForRegistration.Birthdate
                 };
                 _repositoryManager.Client.CreateClient(client);
                 await _repositoryManager.SaveAsync();

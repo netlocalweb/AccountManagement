@@ -23,7 +23,7 @@ namespace Entities.DTO
         public string Email { get; set; }
 
         [Required]
-        public DateTime Brirthdate { get; set; }
+        public DateTime Birthdate { get; set; }
 
         [Required]
         [Phone]
