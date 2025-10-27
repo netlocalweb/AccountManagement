@@ -2,8 +2,11 @@
 
 using AccountManagement;
 using AccountManagement.Extensions;
+using Contracts;
+using Entities;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
+using Repository;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +22,8 @@ builder.Services.ConfigureApplicationServices();
 builder.Services.ConfigureDatabase(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
+builder.Services.AddSingleton<DapperContext>();
+builder.Services.AddScoped<IDapperRepository, ReportsRepository>();
 builder.Services.ConfigureJWT(builder.Configuration);
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

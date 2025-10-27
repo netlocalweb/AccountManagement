@@ -12,7 +12,7 @@ namespace Entities
         public DapperContext(IConfiguration configuration)
         {
             _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("sqlConnection");
+            _connectionString = _configuration.GetConnectionString("AccountManagementConnectionString");
         }
 
         public IDbConnection CreateConnection()

@@ -57,6 +57,12 @@ namespace AccountManagement.Controllers
 
             categoryDto.Code = categoryDto.Code.ToUpper();
 
+            //Kontrollojme nqs nje category me te njejtin code ekziston
+            var exists = await _repositoryManager.Category.GetCategoryByCodeAsync(categoryDto.Code,false);
+            if (exists != null)
+                return Conflict($"A category with code '{categoryDto.Code}' alredy exists.");
+
+
             var category = _mapper.Map<Category>(categoryDto);
             category.DateCreated = DateTime.Now;
 

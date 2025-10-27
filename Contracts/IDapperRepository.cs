@@ -1,4 +1,5 @@
 ﻿using Entities.DTO;
+using Entities.DTO.Reports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,9 @@ namespace Contracts
 {
     public interface IDapperRepository
     {
-        Task<IEnumerable<ClientReports>> GetClientReportsAsync();
- 
+        Task<IEnumerable<ClientAccountDto>> GetClientAccountAsync();
+        Task<IEnumerable<AccountTransactionDto>> GetAccountTransactionsAsync(int accountId);
+        Task<IEnumerable<ClientAccountsDto>> GetClientActiveAccountsAsync(int clientId);
+        Task<IEnumerable<CategoryProductsDto>> GetProductsByCategoryAsync(int categoryId);
     }
 }

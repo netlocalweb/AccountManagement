@@ -29,5 +29,11 @@ namespace Repository
         public void DeleteCategory(Category category) => Delete(category);
 
         public void UpdateCategory(Category category) => Update(category);
+
+        public async Task<Category> GetCategoryByCodeAsync(string code, bool trackChanges)
+        {
+            return await FindByCondition(c => c.Code.ToUpper() == code.ToUpper(),trackChanges)
+              .FirstOrDefaultAsync();
+        }
     }
 }
