@@ -3,7 +3,6 @@ using Contracts;
 using Entities.DTO;
 using Entities.Enums;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountManagement.Controllers

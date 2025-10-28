@@ -1,6 +1,4 @@
 ﻿using Contracts;
-using Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountManagement.Controllers

@@ -163,7 +163,9 @@ namespace AccountManagement.Controllers
             }
 
             await _repositoryManager.SaveAsync();
-            return NoContent();
+
+            var productResponse = _mapper.Map<ProductsDto>(product);
+            return Ok(productResponse);
         }
 
 
@@ -194,7 +196,9 @@ namespace AccountManagement.Controllers
             _repositoryManager.Products.Delete(product);
             await _repositoryManager.SaveAsync();
 
-            return NoContent();
+
+            var productResponse = _mapper.Map<ProductsDto>(product);
+            return Ok(productResponse);
         }
 
     }

@@ -2,9 +2,7 @@
 using Contracts;
 using Entities.DTO;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Repository;
 
 namespace AccountManagement.Controllers
 {
@@ -93,7 +91,8 @@ namespace AccountManagement.Controllers
             category.DateModified = DateTime.Now;
 
             await _repositoryManager.SaveAsync();
-            return NoContent();
+            var categoryDtoResponse = _mapper.Map<CategoryDto>(category);
+            return Ok(categoryDtoResponse);
         }
 
         //Delete Category
@@ -104,12 +103,13 @@ namespace AccountManagement.Controllers
         {
             var category = await _repositoryManager.Category.GetCategoryByIdAsync(id ,trackChanges :false);
             if (category == null)
-                return NotFound();
+                return NotFound($"Category with id {id} not found.");
 
             _repositoryManager.Category.DeleteCategory(category);
             await _repositoryManager.SaveAsync();
 
-            return NoContent();
+            var categoryDtoResponse = _mapper.Map<CategoryDto>(category);
+            return Ok(categoryDtoResponse);
 
         }
 

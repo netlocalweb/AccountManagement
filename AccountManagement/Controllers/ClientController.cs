@@ -3,7 +3,6 @@ using AutoMapper;
 using Contracts;
 using Entities.DTO;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -97,6 +96,7 @@ namespace AccountManagement.Controllers
             var client = await GetClientAndCheckIfExists(id, false);
 
             _repositoryManager.Client.DeleteClient(client);
+            await _repositoryManager.SaveAsync();
             return Ok();
         }
 

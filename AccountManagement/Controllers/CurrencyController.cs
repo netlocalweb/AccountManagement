@@ -101,7 +101,8 @@ namespace AccountManagement.Controllers
             _repositoryManager.Currency.DeleteCurrency(currency);
             await _repositoryManager.SaveAsync();
 
-            return NoContent();
+            var currencyResponse = _mapper.Map<CurrencyDto>(currency);
+            return Ok(currencyResponse);
         }
 
     }
