@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using AccountManagement.Models;
+using Entities.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace AccountManagement.Validation
@@ -28,6 +28,7 @@ namespace AccountManagement.Validation
             
             var claims = new[]
             {
+                new Claim("ClientId", client.Id.ToString()),
                 new Claim("Id", client.Id.ToString()),
                 new Claim("Email", client.Email),
                 new Claim("Username", client.Username)

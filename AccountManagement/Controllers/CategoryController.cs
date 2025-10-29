@@ -1,9 +1,11 @@
-﻿using AccountManagement.Models;
-using AccountManagement.Repositories;
-using AccountManagement.Models.DTOs;
+﻿using AutoMapper;
+using Entities.DTOs;
+using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Repository;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,10 +18,13 @@ namespace AccountManagement.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryRepository repository;
+        private readonly IMapper mapper;
 
-        public CategoryController(ICategoryRepository repository)
+        public CategoryController(ICategoryRepository repository, IMapper mapper)
         {
             this.repository = repository;
+            this.mapper = mapper;
+
         }
 
         //Get all categories
@@ -27,15 +32,8 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> GetAll()
         {
             var categories = await repository.GetAllAsync();
-            var result = categories.Select(c => new CategoryReadDto
-            {
-                Id = c.Id,
-                Code = c.Code,
-                Description = c.Description,
-                DateCreated = c.DateCreated,
-                DateModified = c.DateModified
-            });
-            return Ok(result);
+            var dtoList = mapper.Map<IEnumerable<CategoryReadDto>>(categories);
+            return Ok(dtoList);
         }
 
         //Get categories by id 
@@ -43,45 +41,28 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var category = await repository.GetByIdAsync(id);
-            if (category == null) return NotFound();
+            if (category == null) 
+                return NotFound();
 
-            return Ok(new CategoryReadDto
-            {
-                Id = category.Id,
-                Code = category.Code,
-                Description = category.Description,
-                DateCreated = category.DateCreated,
-                DateModified = category.DateModified
-            });
-            }
+            var dto = mapper.Map<CategoryReadDto>(category);
+            return Ok(dto);
+        }
 
         //Create category 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CategoryCreateDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var category = new Category
-            {
-                Code = dto.Code,
-                Description = dto.Description
-            };
+            var category = mapper.Map<Category>(dto);
 
             try
             {
                 var created = await repository.AddAsync(category);
-
-                return CreatedAtAction(nameof(GetById), new { id = created.Id }, new CategoryReadDto
-                {
-                    Id = created.Id,
-                    Code = created.Code,
-                    Description = created.Description,
-                    DateCreated = created.DateCreated
-                });
+                var readDto = mapper.Map<CategoryReadDto>(created);
+                return CreatedAtAction(nameof(GetById), new { id = created.Id }, readDto);
             }
             catch (Exception ex)
             {
-                //If its not unique 
                 return Conflict($"Could not create category: {ex.Message}");
             }
         }
@@ -90,22 +71,24 @@ namespace AccountManagement.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] CategoryUpdateDto dto)
         {
-            var category = new Category
-            {
-                Description = dto.Description
-            };
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var updated = await repository.UpdateAsync(id, category);
-            if (updated == null) return NotFound();
+            var existing = await repository.GetByIdAsync(id);
+            if (existing == null) return NotFound();
 
-            return Ok(new CategoryReadDto
+            // Maps updated fields from Dto to existing entity
+            mapper.Map(dto, existing);
+
+            try
             {
-                Id = updated.Id,
-                Code = updated.Code,
-                Description = updated.Description,
-                DateCreated = updated.DateCreated,
-                DateModified = updated.DateModified
-            });
+                var updated = await repository.UpdateAsync(id, existing);
+                var readDto = mapper.Map<CategoryReadDto>(updated);
+                return Ok(readDto);
+            }
+            catch (Exception ex)
+            {
+                return Conflict($"Could not update category: {ex.Message}");
+            }
         }
 
         //Deleting category
@@ -113,7 +96,8 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await repository.DeleteAsync(id);
-            if (!deleted) return NotFound();
+            if (!deleted) 
+                return NotFound();
             return NoContent();
         }
     }

@@ -1,5 +1,6 @@
-﻿using AccountManagement.DTOs;
-using AccountManagement.Repositories;
+﻿using Entities.DTOs;
+using Repository;
+using Contracts;
 using AccountManagement.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +16,7 @@ namespace AccountManagement.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IClientRepository clientRepository;
-        private readonly PasswordHasher<Models.Client> passHasher;//hashes and verifies password
+        private readonly PasswordHasher<Entities.Models.Client> passHasher;//hashes and verifies password
         private readonly JwtTokenService jwtService;//generates a jwt token after login
 
         public AuthController(
@@ -24,7 +25,7 @@ namespace AccountManagement.Controllers
         {
             this.clientRepository = clientRepository;
             this.jwtService = jwtService;
-            this.passHasher = new PasswordHasher<Models.Client>();
+            this.passHasher = new PasswordHasher<Entities.Models.Client>();
         }
         //Login method that contains username and password
         [HttpPost("login")]

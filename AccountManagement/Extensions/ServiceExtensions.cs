@@ -41,8 +41,8 @@ namespace AccountManagement.Extensions
         public static void ConfigureDapperContext(this IServiceCollection services) =>
             services.AddSingleton<DapperContext>();
 
-        public static void ConfigureRepositoryManager(this IServiceCollection services) =>
-           services.AddScoped<IRepositoryManager, RepositoryManager>();
+        //public static void ConfigureRepositoryManager(this IServiceCollection services) =>
+          // services.AddScoped<IRepositoryManager, RepositoryManager>();
 
         public static void ConfigureDapperRepository(this IServiceCollection services) =>
             services.AddScoped<IDapperRepository, DapperRepository>();

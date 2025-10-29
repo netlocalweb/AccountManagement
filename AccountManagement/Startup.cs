@@ -1,5 +1,5 @@
-using AccountManagement.Data;
-using AccountManagement.Repositories;
+using Entities;
+using Repository;
 using AccountManagement.Validation;
 using AccountManagement.Extensions;
 using AutoMapper;
@@ -17,10 +17,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
-using Repository;
 using System;
 using System.IO;
 using System.Text;
+using Entities.DTOs;
 
 namespace AccountManagement
 {
@@ -43,7 +43,7 @@ namespace AccountManagement
             
 
             // DbContexts
-            services.AddDbContext<AppDbContext>(options =>
+            services.AddDbContext<RepositoryContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // Repositories
@@ -59,7 +59,7 @@ namespace AccountManagement
 
             services.AddScoped<IBankTransactionRepository, BankTransactionRepository>();
 
-            services.AddScoped<Repositories.IDapperRepository, Repositories.DapperRepository>();
+            services.AddScoped<IDapperRepository, DapperRepository>();
 
             // JWT Token service
             services.AddScoped<JwtTokenService>();
@@ -68,7 +68,7 @@ namespace AccountManagement
 
 
             // AutoMapper
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddHttpContextAccessor();
 

@@ -1,9 +1,13 @@
-﻿using AccountManagement.Models;
-using AccountManagement.Models.DTOs;
-using AccountManagement.Repositories;
+﻿using AutoMapper;
+using Contracts;
+using Entities.DTOs;
+using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Repository;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,11 +18,19 @@ namespace AccountManagement.Controllers
     [ApiController]
     public class BankTransactionController : ControllerBase
     {
-        private readonly IBankTransactionRepository repository;
+        private readonly IBankTransactionRepository transactionRepository;
+        private readonly IBankAccountRepository accountRepository;
+        private readonly IMapper mapper;
 
-        public BankTransactionController(IBankTransactionRepository repository)
+        public BankTransactionController(IBankTransactionRepository repository,
+            IBankTransactionRepository transactionRepository,
+            IBankAccountRepository accountRepository,
+            IMapper mapper)
         {
-            this.repository = repository;
+                this.transactionRepository = transactionRepository;
+                this.accountRepository = accountRepository;
+                this.mapper = mapper;
+            
         }
 
         // Get all transactions which are active
@@ -26,20 +38,14 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> GetAll([FromQuery] int bankAccountId)
         {
             if (bankAccountId <= 0)
-                return BadRequest("BankAccountId must be provided and greater than zero.");
+                return BadRequest("BankAccountId must be greater than zero.");
 
-            var transactions = await repository.GetAllAsync(bankAccountId);
-            var dtos = transactions.Select(t => new BankTransactionReadDto
-            {
-                Id = t.Id,
-                BankAccountId = t.BankAccountId,
-                Action = t.Action,
-                Amount = t.Amount,
-                IsActive = t.IsActive,
-                DateCreated = t.DateCreated,
-                DateModified = t.DateModified
-            }).ToList();
+            var account = await accountRepository.GetByIdAsync(bankAccountId);
+            if (account == null)
+                return NotFound($"Bank account with ID {bankAccountId} not found.");
 
+            var transactions = await transactionRepository.GetAllAsync(bankAccountId);
+            var dtos = mapper.Map<IEnumerable<BankTransactionReadDto>>(transactions);
             return Ok(dtos);
         }
 
@@ -47,20 +53,11 @@ namespace AccountManagement.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var transaction = await repository.GetByIdAsync(id);
-            if (transaction == null) return NotFound();
+            var transaction = await transactionRepository.GetByIdAsync(id); 
+            if (transaction == null) 
+                return NotFound();
 
-            var dto = new BankTransactionReadDto
-            {
-                Id = transaction.Id,
-                BankAccountId = transaction.BankAccountId,
-                Action = transaction.Action,
-                Amount = transaction.Amount,
-                IsActive = transaction.IsActive,
-                DateCreated = transaction.DateCreated,
-                DateModified = transaction.DateModified
-            };
-
+            var dto = mapper.Map<BankTransactionReadDto>(transaction);
             return Ok(dto);
         }
 
@@ -68,46 +65,47 @@ namespace AccountManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(BankTransactionCreateDto dto)
         {
-            var transaction = new BankTransaction
-            {
-                BankAccountId = dto.BankAccountId,
-                Action = dto.Action,
-                Amount = dto.Amount,
-                IsActive = true,
-                DateCreated = System.DateTime.UtcNow
-            };
+            var account = await accountRepository.GetByIdAsync(dto.BankAccountId);
+            if (account == null)
+                return NotFound("Bank account was not found.");
 
-            try
-            {
-                var created = await repository.AddAsync(transaction);
-                if (created == null) return NotFound("Bank account was not found.");
+            
+            if (dto.Action == TransactionAction.Withdraw && account.Balance < dto.Amount)
+                return BadRequest("There is not enought balance.");
 
-                var readDto = new BankTransactionReadDto
-                {
-                    Id = created.Id,
-                    BankAccountId = created.BankAccountId,
-                    Action = created.Action,
-                    Amount = created.Amount,
-                    IsActive = created.IsActive,
-                    DateCreated = created.DateCreated
-                };
+            if (dto.Action == TransactionAction.Deposit)
+                account.Balance += dto.Amount;
+            else if (dto.Action == TransactionAction.Withdraw)
+                account.Balance -= dto.Amount;
 
-                return CreatedAtAction(nameof(GetById), new { id = readDto.Id }, readDto);
-            }
-            catch (System.InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message); 
-            }
+            account.DateModified = DateTime.UtcNow;
+
+            // Map transaction
+            var transaction = mapper.Map<BankTransaction>(dto);
+            transaction.IsActive = true;
+            transaction.DateCreated = DateTime.UtcNow;
+
+            await transactionRepository.AddAsync(transaction);
+            await accountRepository.UpdateAsync(account);
+
+            var readDto = mapper.Map<BankTransactionReadDto>(transaction);
+            return CreatedAtAction(nameof(GetById), new { id = readDto.Id }, readDto);
         }
+
 
         // Soft delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await repository.SoftDeleteAsync(id);
-            if (!deleted) return NotFound();
+            var existing = await transactionRepository.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound("Transaction not found.");
 
-            return NoContent(); 
+            var deleted = await transactionRepository.SoftDeleteAsync(id);
+            if (!deleted)
+                return BadRequest("Could not delete transaction.");
+
+            return NoContent();
         }
     }
 }

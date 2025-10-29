@@ -1,10 +1,13 @@
-﻿using AccountManagement.Models;
-using AccountManagement.Repositories;
-using AccountManagement.Models.DTOs;
+﻿using AutoMapper;
+using Contracts;
+using Entities.DTOs;
+using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Repository;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,55 +19,35 @@ namespace AccountManagement.Controllers
     public class BankAccountController : ControllerBase
     {
         private readonly IBankAccountRepository repository;
-        public BankAccountController(IBankAccountRepository repository)
+        private readonly IMapper mapper;
+        public BankAccountController(IBankAccountRepository repository, IMapper mapper)
         {
             this.repository = repository;
+            this.mapper = mapper;
 
         }
-        // GET all for a client
+        // GET all for only logged in clients 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int clientId)
+        public async Task<IActionResult> GetAll()
         {
-            if (clientId <= 0)
-                return BadRequest("ClientId must be greater than zero.");
+            var clientId = GetClientIdFromToken();
+            if (clientId == null) return Unauthorized();
 
-            var accounts = await repository.GetAllAsync(clientId);
-            var dtos = accounts.Select(a => new BankAccountReadDto
-            {
-                Id = a.Id,
-                Code = a.Code,
-                Name = a.Name,
-                CurrencyId = a.CurrencyId,
-                Balance = a.Balance,
-                ClientId = a.ClientId,
-                IsActive = a.IsActive,
-                DateCreated = a.DateCreated,
-                DateModified = a.DateModified
-            }).ToList();
-
+            var accounts = await repository.GetAllAsync(clientId.Value);
+            var dtos = mapper.Map<IEnumerable<BankAccountReadDto>>(accounts);
             return Ok(dtos);
         }
+        
 
         // GET by id
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var account = await repository.GetByIdAsync(id);
-            if (account == null) return NotFound();
+            if (account == null) //checks if account is null
+                return NotFound();
 
-            var dto = new BankAccountReadDto
-            {
-                Id = account.Id,
-                Code = account.Code,
-                Name = account.Name,
-                CurrencyId = account.CurrencyId,
-                Balance = account.Balance,
-                ClientId = account.ClientId,
-                IsActive = account.IsActive,
-                DateCreated = account.DateCreated,
-                DateModified = account.DateModified
-            };
-
+            var dto = mapper.Map<BankAccountReadDto>(account);
             return Ok(dto);
         }
 
@@ -72,30 +55,19 @@ namespace AccountManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(BankAccountCreateDto dto)
         {
-            var account = new BankAccount
-            {
-                Code = dto.Code,
-                Name = dto.Name,
-                CurrencyId = dto.CurrencyId,
-                Balance = dto.Balance,
-                ClientId = dto.ClientId,
-                IsActive = true,
-                DateCreated = DateTime.UtcNow
-            };
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var clientId = GetClientIdFromToken();
+            if (clientId == null) return Unauthorized();
+
+            // Map Dto to entity
+            var account = mapper.Map<BankAccount>(dto);
+            account.ClientId = clientId.Value;
+            account.IsActive = true;
+            account.DateCreated = DateTime.UtcNow;
 
             var created = await repository.AddAsync(account);
-
-            var readDto = new BankAccountReadDto
-            {
-                Id = created.Id,
-                Code = created.Code,
-                Name = created.Name,
-                CurrencyId = created.CurrencyId,
-                Balance = created.Balance,
-                ClientId = created.ClientId,
-                IsActive = created.IsActive,
-                DateCreated = created.DateCreated
-            };
+            var readDto = mapper.Map<BankAccountReadDto>(created);
 
             return CreatedAtAction(nameof(GetById), new { id = readDto.Id }, readDto);
         }
@@ -105,42 +77,62 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> Update(int id, BankAccountUpdateDto dto)
         {
             var existing = await repository.GetByIdAsync(id);
-            if (existing == null) return NotFound();
+            if (existing == null)
+                return NotFound();
 
-            existing.Code = dto.Code;
-            existing.Name = dto.Name;
-            existing.CurrencyId = dto.CurrencyId;
-            existing.IsActive = dto.IsActive;
-            if (dto.Balance.HasValue) existing.Balance = dto.Balance.Value;
+            // Code uniqueness 
+            var newCode = dto.Code.Trim().ToUpper();
+            bool exists = await repository.ExistsByCodeAsync(existing.ClientId, newCode, excludeId: id);
+            if (exists)
+                return BadRequest($"Client already has another account with code '{dto.Code}'.");
+
+           
+            if (dto.Balance < 0)
+                return BadRequest("Balance cannot be negative.");
+
+           
+            mapper.Map(dto, existing);
+            existing.Code = newCode;
+            existing.DateModified = DateTime.UtcNow;
 
             var updated = await repository.UpdateAsync(existing);
-
-            var readDto = new BankAccountReadDto
-            {
-                Id = updated.Id,
-                Code = updated.Code,
-                Name = updated.Name,
-                CurrencyId = updated.CurrencyId,
-                Balance = updated.Balance,
-                ClientId = updated.ClientId,
-                IsActive = updated.IsActive,
-                DateCreated = updated.DateCreated,
-                DateModified = updated.DateModified
-            };
-
+            var readDto = mapper.Map<BankAccountReadDto>(updated);
             return Ok(readDto);
         }
 
         //Soft delete
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+            public async Task<IActionResult> Delete(int id)
+            {
+            try
+            {
+                var existing = await repository.GetByIdAsync(id);
+                if (existing == null) return NotFound(new { message = "Account not found." });
+
+                // Checks if there is no balance before deleting it
+                if (existing.Balance > 0)
+                    throw new InvalidOperationException("Cannot delete an account with a positive balance.");
+
+                var deleted = await repository.SoftDeleteAsync(id);
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting the account." });
+            }
+        }
+
+        //Extra method to get clientId from token
+        private int? GetClientIdFromToken()
         {
-            var deleted = await repository.SoftDeleteAsync(id);
-            if (!deleted) return NotFound();
-
-            return NoContent();
-
-
+            var claim = User.FindFirst("ClientId")?.Value;
+            if (string.IsNullOrEmpty(claim) || !int.TryParse(claim, out int clientId))
+                return null;
+            return clientId;
         }
     }
 }

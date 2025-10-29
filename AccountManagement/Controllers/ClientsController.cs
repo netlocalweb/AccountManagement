@@ -1,12 +1,13 @@
-﻿using AccountManagement.Models;
-using AccountManagement.Repositories;
-using AccountManagement.Validation;
-using AccountManagement.Dtos;
+﻿using AccountManagement.Validation;
+using AutoMapper;
+using Contracts;
+using Entities.DTOs;
+using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,10 +20,12 @@ namespace AccountManagementControllers
     {
         private readonly IClientRepository clientRepository;
         private readonly PasswordHasher<Client> passHasher;
+        private readonly IMapper mapper;
 
-        public ClientsController(IClientRepository repo)
+        public ClientsController(IClientRepository repo, IMapper mapper)
         {
-            this.clientRepository = repo; 
+            this.clientRepository = repo;
+            this.mapper = mapper;
             passHasher = new PasswordHasher<Client>();
         }
 
@@ -32,18 +35,7 @@ namespace AccountManagementControllers
         public async Task<IActionResult> GetAll()
         {
             var clients = await clientRepository.GetAllAsync();
-            var dtos = clients.Select(c => new ClientReadDto
-            {
-                Id = c.Id,
-                FirstName = c.FirstName,
-                LastName = c.LastName,
-                Email = c.Email,
-                Birthdate = c.Birthdate,
-                Phone = c.Phone,
-                DateCreated = c.DateCreated,
-                DateModified = c.DateModified,
-                Username = c.Username
-            });
+            var dtos = mapper.Map<IEnumerable<ClientReadDto>>(clients);
             return Ok(dtos);
         }
 
@@ -54,18 +46,8 @@ namespace AccountManagementControllers
         {
             var client = await clientRepository.GetByIdAsync(id);
             if (client == null) return NotFound();
-            var dto = new ClientReadDto
-            {
-                Id = client.Id,
-                FirstName = client.FirstName,
-                LastName = client.LastName,
-                Email = client.Email,
-                Birthdate = client.Birthdate,
-                Phone = client.Phone,
-                DateCreated = client.DateCreated,
-                DateModified = client.DateModified,
-                Username = client.Username
-            };
+
+            var dto = mapper.Map<ClientReadDto>(client);
             return Ok(dto);
         }
 
@@ -90,34 +72,14 @@ namespace AccountManagementControllers
             if (await clientRepository.GetByUsernameAsync(dto.Username) != null)
                 return Conflict("Username already in use.");
 
-            var client = new Client
-            {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Email = dto.Email,
-                Birthdate = dto.Birthdate,
-                Phone = dto.Phone,
-                DateCreated = DateTime.UtcNow,
-                Username = dto.Username
-            };
+            var client = mapper.Map<Client>(dto);
 
             // Hash password
             client.PasswordHash = passHasher.HashPassword(client, dto.Password);
 
             await clientRepository.CreateAsync(client);
 
-            var resultDto = new ClientReadDto
-            {
-                Id = client.Id,
-                FirstName = client.FirstName,
-                LastName = client.LastName,
-                Email = client.Email,
-                Birthdate = client.Birthdate,
-                Phone = client.Phone,
-                DateCreated = client.DateCreated,
-                DateModified = client.DateModified,
-                Username = client.Username
-            };
+            var resultDto = mapper.Map<ClientReadDto>(client);
 
             return CreatedAtAction(nameof(GetById), new { id = client.Id }, resultDto);
         }
@@ -143,12 +105,8 @@ namespace AccountManagementControllers
             var byUsername = await clientRepository.GetByUsernameAsync(dto.Username);
             if (byUsername != null && byUsername.Id != id) return Conflict("Username is already in use.");
 
-            existing.FirstName = dto.FirstName;
-            existing.LastName = dto.LastName;
-            existing.Email = dto.Email;
-            existing.Birthdate = dto.Birthdate;
-            existing.Phone = dto.Phone;
-            existing.Username = dto.Username;
+            //Map updated dto to the existing model
+            mapper.Map(dto, existing);
             existing.DateModified = DateTime.UtcNow;
 
             // If new password provided, validate & hash it

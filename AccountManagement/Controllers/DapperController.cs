@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using AccountManagement.Repositories;
+using Repository;
 using Microsoft.AspNetCore.Authorization;
-using AccountManagement.Models.DTOs.ReportsDto;
+using Contracts;
 using System;
 
 

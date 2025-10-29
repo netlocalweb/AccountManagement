@@ -1,11 +1,13 @@
-﻿using AccountManagement.Models;
-using AccountManagement.Repositories;
-using AccountManagement.Models.DTOs;
+﻿using AutoMapper;
+using Contracts;
+using Entities.DTOs;
+using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -20,29 +22,27 @@ namespace AccountManagement.Controllers
     {
         private readonly IProductRepository repository;
         private readonly IWebHostEnvironment env;
+        private readonly IMapper mapper;
 
-        public ProductController(IProductRepository repository, IWebHostEnvironment env)
+        public ProductController(IProductRepository repository, IWebHostEnvironment env, IMapper mapper)
         {
             this.repository = repository;
             this.env = env;
+            this.mapper = mapper;
         }
         //Get all method
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var products = await repository.GetAllAsync();
-            var dtos = products.Select(p => new ProductReadDto
+            var dtos = mapper.Map<IEnumerable<ProductReadDto>>(products);
+
+          
+            foreach (var dto in dtos)
             {
-                Id = p.Id,
-                Name = p.Name,
-                ShortDescription = p.ShortDescription,
-                LongDescription = p.LongDescription,
-                CategoryId = p.CategoryId,
-                Price = p.Price,
-                ImageUrl = p.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}/images/{p.ImageUrl}" : null,
-                DateCreated = p.DateCreated,
-                DateModified = p.DateModified
-            });
+                if (!string.IsNullOrEmpty(dto.ImageUrl))
+                    dto.ImageUrl = $"{Request.Scheme}://{Request.Host}/images/{dto.ImageUrl}";
+            }
 
             return Ok(dtos);
         }
@@ -52,20 +52,14 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var product = await repository.GetByIdAsync(id);
-            if (product == null) return NotFound();
+            if (product == null) 
+                return NotFound();
 
-            var dto = new ProductReadDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                ShortDescription = product.ShortDescription,
-                LongDescription = product.LongDescription,
-                CategoryId = product.CategoryId,
-                Price = product.Price,
-                ImageUrl = product.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}/images/{product.ImageUrl}" : null,
-                DateCreated = product.DateCreated,
-                DateModified = product.DateModified
-            };
+            var dto = mapper.Map<ProductReadDto>(product);
+
+            if (!string.IsNullOrEmpty(dto.ImageUrl))
+                dto.ImageUrl = $"{Request.Scheme}://{Request.Host}/images/{dto.ImageUrl}";
+
             return Ok(dto);
         }
 
@@ -73,7 +67,10 @@ namespace AccountManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] ProductsCreateDto dto)
         {
-            string? imagePath = null;
+            if (!ModelState.IsValid) 
+                return BadRequest(ModelState);
+
+                string? imagePath = null;
 
             if (dto.Image != null)
             {
@@ -87,19 +84,16 @@ namespace AccountManagement.Controllers
 
                 imagePath = fileName;
             }
-
-            var product = new Product
-            {
-                Name = dto.Name,
-                ShortDescription = dto.ShortDescription,
-                LongDescription = dto.LongDescription,
-                CategoryId = dto.CategoryId,
-                Price = dto.Price,
-                ImageUrl = imagePath
-            };
+            var product = mapper.Map<Product>(dto);
+            product.ImageUrl = imagePath;
 
             var created = await repository.AddAsync(product);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var readDto = mapper.Map<ProductReadDto>(created);
+
+            if (!string.IsNullOrEmpty(readDto.ImageUrl))
+                readDto.ImageUrl = $"{Request.Scheme}://{Request.Host}/images/{readDto.ImageUrl}";
+
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, readDto);
         }
 
         //Update method
@@ -107,7 +101,8 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> Update(int id, [FromForm] ProductsCreateDto dto)
         {
             var existing = await repository.GetByIdAsync(id);
-            if (existing == null) return NotFound();
+            if (existing == null) 
+                return NotFound();
 
             if (dto.Image != null)
             {
@@ -121,12 +116,7 @@ namespace AccountManagement.Controllers
 
                 existing.ImageUrl = fileName;
             }
-
-            existing.Name = dto.Name;
-            existing.ShortDescription = dto.ShortDescription;
-            existing.LongDescription = dto.LongDescription;
-            existing.CategoryId = dto.CategoryId;
-            existing.Price = dto.Price;
+            mapper.Map(dto, existing);
 
             await repository.UpdateAsync(existing);
             return NoContent();
@@ -137,7 +127,8 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await repository.DeleteAsync(id);
-            if (!deleted) return NotFound();
+            if (!deleted) 
+                return NotFound();
             return NoContent();
         }
     }

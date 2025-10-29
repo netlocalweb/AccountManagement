@@ -1,6 +1,7 @@
-﻿using AccountManagement.Models;
-using AccountManagement.Repositories;
-using AccountManagement.Models.DTOs;
+﻿using AutoMapper;
+using Contracts;
+using Entities.DTOs;
+using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -15,29 +16,19 @@ namespace AccountManagement.Controllers
     public class CurrencyController : ControllerBase
     {
         private readonly ICurrencyRepository repository;
+        private readonly IMapper mapper;
 
-        public CurrencyController(ICurrencyRepository repository)
+        public CurrencyController(ICurrencyRepository repository, IMapper mapper)
         {
             this.repository = repository;
+            this.mapper = mapper;
         }
         //Get all currencies
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var currencies = await repository.GetAllAsync();
-            var result = new List<CurrencyReadDto>();
-
-            foreach (var c in currencies)
-            {
-                result.Add(new CurrencyReadDto
-                {
-                    Id = c.Id,
-                    Code = c.Code,
-                    Description = c.Description,
-                    ExchangeRate = c.ExchangeRate
-                });
-            }
-
+            var result = mapper.Map<IEnumerable<CurrencyReadDto>>(currencies);
             return Ok(result);
         }
 
@@ -46,16 +37,10 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var currency = await repository.GetByIdAsync(id);
-            if (currency == null) return NotFound();
+            if (currency == null) 
+                return NotFound();
 
-            var dto = new CurrencyReadDto
-            {
-                Id = currency.Id,
-                Code = currency.Code,
-                Description = currency.Description,
-                ExchangeRate = currency.ExchangeRate
-            };
-
+            var dto = mapper.Map<CurrencyReadDto>(currency);
             return Ok(dto);
         }
 
@@ -69,20 +54,13 @@ namespace AccountManagement.Controllers
             if (await repository.GetByCodeAsync(dto.Code.ToUpper()) != null)
                 return Conflict("Currency code already exists.");
 
-            var created = await repository.AddAsync(new Currency
-            {
-                Code = dto.Code.ToUpper(),
-                Description = dto.Description,
-                ExchangeRate = dto.ExchangeRate
-            });
+            var currency = mapper.Map<Currency>(dto);
+            currency.Code = dto.Code.ToUpper();
 
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, new CurrencyReadDto
-            {
-                Id = created.Id,
-                Code = created.Code,
-                Description = created.Description,
-                ExchangeRate = created.ExchangeRate
-            });
+            var created = await repository.AddAsync(currency);
+            var readDto = mapper.Map<CurrencyReadDto>(created);
+
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, readDto);
         }
 
         // PUT: api/currency/{id}
@@ -90,20 +68,15 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult> Update(int id, CurrencyUpdateDto dto)
         {
             var currency = await repository.GetByIdAsync(id);
-            if (currency == null) return NotFound();
+            if (currency == null) 
+                return NotFound();
 
-            currency.Description = dto.Description;
-            currency.ExchangeRate = dto.ExchangeRate;
+            mapper.Map(dto, currency);
 
             var updated = await repository.UpdateAsync(currency);
+            var readDto = mapper.Map<CurrencyReadDto>(updated);
 
-            return Ok(new CurrencyReadDto
-            {
-                Id = updated.Id,
-                Code = updated.Code,
-                Description = updated.Description,
-                ExchangeRate = updated.ExchangeRate
-            });
+            return Ok(readDto);
         }
         
 
@@ -112,7 +85,8 @@ namespace AccountManagement.Controllers
         public async Task<IActionResult>Delete(int id)
         {
             var deleted = await repository.DeleteAsync(id);
-            if (!deleted) return NotFound();//If not found
+            if (!deleted) 
+                return NotFound();//If not found
             return NoContent();//if found
         }
     };
