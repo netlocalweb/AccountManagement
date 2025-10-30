@@ -14,19 +14,20 @@ namespace Repository
             _dapperContext = dapperContext;
         }
 
+        //Marr transaksionet e nje llogarie bankare
         public async Task<IEnumerable<AccountTransactionDto>> GetAccountTransactionsAsync(int accountId)
         {
             var query = @"
             SELECT
                 CASE 
-                WHEN t.Type = 1 THEN 'Depozitim'
-                WHEN t.Type = 1 THEN 'Depozitim'
-               END AS ACTION,
+                WHEN t.Action = 1 THEN 'Depozitim'
+                WHEN t.Action = 2 THEN 'Terheqje'
+               END AS ActionName,
                 t.Amount,
-                t.Date
-            FROM Transaction t 
-            WHERE t.AccountId = @accountId
-            ORDER BY t.Date DESC;";
+                t.DateCreated AS Date
+            FROM BankTransaction t 
+            WHERE t.BankAccountId = @accountId
+            ORDER BY t.DateCreated DESC;";
 
             using (var connection = _dapperContext.CreateConnection())
             {
@@ -34,7 +35,7 @@ namespace Repository
             }
 
         }
-
+        //Merr llogarite e klienteve dhe detajet perkatese 
         public async Task<IEnumerable<ClientAccountDto>> GetClientAccountAsync()
         {
             var query = @"
@@ -56,7 +57,7 @@ namespace Repository
             }
 
         }
-
+        //Merr llogarite aktive te nje klienti 
         public async Task<IEnumerable<ClientAccountsDto>> GetClientActiveAccountsAsync(int clientId)
         {
             var query = @"
@@ -65,8 +66,8 @@ namespace Repository
                     a.Name AS AccountName,
                     cu.Code AS Currency,
                     a.Balance AS CurrentBalance
-                FROM [AccountManagementDb].[dbo].[BankAccounts] a 
-                INNER JOIN[AccountManagementDb].[dbo].[Currencies] cu ON a.CurrencyId = cu.Id
+                FROM BankAccounts a 
+                INNER JOIN Currencies cu ON a.CurrencyId = cu.Id
                 WHERE a.ClientId = @clientId
                 AND a.IsActive = 1;
             ";
@@ -76,7 +77,7 @@ namespace Repository
             }
 
         }
-
+        //Merr produktet sipas nje kategorie
         public async Task<IEnumerable<CategoryProductsDto>> GetProductsByCategoryAsync(int categoryId)
         {
             var query = @"

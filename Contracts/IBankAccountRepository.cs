@@ -1,9 +1,4 @@
 ﻿using Entities.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Contracts
 {
@@ -11,6 +6,8 @@ namespace Contracts
     {
         Task<IEnumerable<BankAccount>> GetAllBankAccountsAsync(bool trackchanges);
         Task<BankAccount?> GetBankAccountByIdAsync(int id ,bool trackchanges);
+        Task<IEnumerable<BankAccount>> GetBankAccountByClientId(int clientId, bool trackchanges);
+        //Kontrollon nqs kodi ekziston per nje klient te caktuar 
         Task<bool>CodeExistsForClientAsync(string code, int clientId );
         void CreateBankAccount(BankAccount bankAccount);
         void UpdateBankAccount(BankAccount bankAccount);

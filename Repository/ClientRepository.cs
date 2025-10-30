@@ -1,12 +1,6 @@
 ﻿using Contracts;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repository
 {
@@ -16,11 +10,12 @@ namespace Repository
         {
 
         }
+        //Merr te gjithe klientet 
         public async Task<IEnumerable<Client>> GetAllClientsAsync(bool trackChanges) =>
             await FindAll(trackChanges)
             .Include(c => c.User)
             .ToListAsync();
-
+        //Merr klientin sipas id
         public async Task<Client?> GetClientByIdAsync(int id, bool trackChanges) =>
             await FindByCondition(c => c.Id.Equals(id), trackChanges)
             .Include(c => c.User)
@@ -28,6 +23,8 @@ namespace Repository
 
         public void CreateClient(Client client) => Create(client);
         public void UpdateClient(Client client) => Update(client);
+
+        //bllokon User ne vend që ta fshije
         public void DeleteClient(Client client)
         {
             if (client.User != null)
@@ -37,7 +34,7 @@ namespace Repository
             }
             Update(client);
         }
-
+        //Merr klientin sipas userId
         public async Task<Client?> GetClientByUserIdAsync(string userId, bool trackChanges)
         {
             return await FindByCondition(c => c.UserId.Equals(userId), trackChanges)

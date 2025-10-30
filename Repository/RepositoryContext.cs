@@ -10,6 +10,7 @@ namespace Repository
         public RepositoryContext(DbContextOptions options) : base(options)
         {
         }
+        //konfigurimi i modeleve
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

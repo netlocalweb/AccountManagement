@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Entities.DTO
 {
@@ -23,7 +18,7 @@ namespace Entities.DTO
         public string Email { get; set; } = null!;
 
         [Required]
-        public DateTime Brirthdate { get; set; }
+        public DateTime Birthdate { get; set; }
 
         [Required]
         [Phone]

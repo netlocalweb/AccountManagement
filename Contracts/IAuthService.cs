@@ -1,20 +1,16 @@
 ﻿using Entities.DTO;
-using Entities.Models;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Contracts
 {
+    //Autentifikimi dhe regjisrimi i userave
     public interface IAuthService
     {
+        //Regjistrimi i nje useri te ri 
         Task<IdentityResult> RegisterUser(UserForRegistrationDto userForRegistration);
+        //Validon kredencialet e userit per login
         Task<bool> ValidateUser(UserForAuthenticationDto userForAuth);
+        //Krijon token per userin e loguar
         Task<string> CreateToken();
-        //Task<Client> GetLoggedInClientIdAsync(string userId);
-
     }
 }

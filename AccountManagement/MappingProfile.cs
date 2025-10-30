@@ -14,7 +14,10 @@ namespace AccountManagement
             CreateMap<UserForRegistrationDto, User>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName));
-            CreateMap<Client, ClientDto>().ReverseMap();
+
+            CreateMap<Client, ClientDto>()
+               .ForMember(dest => dest.Birthdate,opt => opt.MapFrom(src => src.Birthdate));
+
             CreateMap<UpdateClientDto, Client>();
 
             CreateMap<Currency, CurrencyDto>().ReverseMap();

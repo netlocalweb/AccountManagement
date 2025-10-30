@@ -32,9 +32,15 @@ namespace AccountManagement.Controllers
         //Get all bank accounts 
         //GET:api/bankaccounts
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllBankAccounts()
         {
-            var account = await _repositoryManager.BankAccount.GetAllBankAccountsAsync(trackchanges: false);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var client = await _repositoryManager.Client.GetClientByUserIdAsync(userId, false);
+            if (client == null)
+                return BadRequest("Client dosen't exists");
+
+            var account = await _repositoryManager.BankAccount.GetBankAccountByClientId(client.Id,trackchanges: false);
             var accountDto = _mapper.Map<IEnumerable<BankAccountDto>>(account);
             return Ok(accountDto);
         }
@@ -94,6 +100,7 @@ namespace AccountManagement.Controllers
             _mapper.Map(bankAccount, account);
             _repositoryManager.BankAccount.UpdateBankAccount(account);
             await _repositoryManager.SaveAsync();
+
 
             return NoContent();
         }

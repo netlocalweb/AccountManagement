@@ -1,14 +1,11 @@
 ﻿using Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repository
 {
+    //Menaxhon te gjitha repository-t
     public sealed class RepositoryManager : IRepositoryManager
     {
+        //Lazy repository (inicializohet vetem kur te perdoren)
         private readonly RepositoryContext _context;
         private Lazy<IClientRepository> _clientRepository;
         private Lazy<ICurrencyRepository> _currencyRepository;

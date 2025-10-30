@@ -1,5 +1,4 @@
 ﻿
-
 using Contracts;
 using Entities.DTO;
 using Microsoft.AspNetCore.Identity;
@@ -10,8 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-
-
 
 
 namespace AccountManagement.Service
@@ -35,6 +32,7 @@ namespace AccountManagement.Service
             _configuration = configuration;
         }
 
+        //Ben regjistrimin e klientit dhe krijon userin 
         public async Task<IdentityResult> RegisterUser(UserForRegistrationDto userForRegistration)
         {
             var user = _mapper.Map<User>(userForRegistration);
@@ -59,7 +57,7 @@ namespace AccountManagement.Service
 
         }
 
-
+        //Validon perdoruesin per login
         public async Task<bool> ValidateUser(UserForAuthenticationDto userForAuth)
         {
            _user = await _userManager.FindByNameAsync(userForAuth.UserName);
@@ -75,7 +73,7 @@ namespace AccountManagement.Service
             }
             return result;
         }
-
+        //Krijon JWT per userin e loguar 
         public async Task<string> CreateToken()
         {
             var signingCredentials = GetSigningCredentials();
@@ -85,14 +83,14 @@ namespace AccountManagement.Service
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
         }
-
+        //Merr kredencialet per JWT
         private SigningCredentials GetSigningCredentials()
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var secretkey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
             return new SigningCredentials(secretkey, SecurityAlgorithms.HmacSha256);
         }
-
+        //Lista e claims per userin
         private async Task <List<Claim>> GetClaims()
         {
             var claims = new List<Claim>
@@ -104,7 +102,7 @@ namespace AccountManagement.Service
              return claims;
 
         }
-
+        //Gjenron token Jwt
         private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");

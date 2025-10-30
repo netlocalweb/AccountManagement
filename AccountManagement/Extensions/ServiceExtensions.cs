@@ -5,7 +5,6 @@ using LoggerService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Repository;
@@ -124,15 +123,5 @@ namespace AccountManagement.Extensions
                 });
         }
 
-
-
-        //    public static void ConfigureDapperContext(this IServiceCollection services) =>
-        //        services.AddSingleton<DapperContext>();
-
-        //    public static void ConfigureRepositoryManager(this IServiceCollection services) =>
-        //       services.AddScoped<IRepositoryManager, RepositoryManager>();
-
-        //    public static void ConfigureDapperRepository(this IServiceCollection services) =>
-        //        services.AddScoped<IDapperRepository, DapperRepository>();
     }
 }

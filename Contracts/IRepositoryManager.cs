@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Contracts
+﻿namespace Contracts
 {
+    //Interface per menaxhimin e te gjitha repository-ve
     public interface IRepositoryManager
     {
         IClientRepository Client {  get; }
