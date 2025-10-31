@@ -2,9 +2,7 @@
 using Contracts;
 using Entities.DTO;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 
 namespace AccountManagement.Controllers
 {
@@ -128,7 +126,7 @@ namespace AccountManagement.Controllers
             if (product == null)
                 return NotFound($"Product with ID {id} not found.");
 
-            // Check if the name exists for another product
+            // Kontrollon nese ekziston nje produkt me te njejtin emer
             var existingProduct = await _repositoryManager.Products.GetProductByNameAsync(productDto.Name, false);
             if (existingProduct != null && existingProduct.Id != id)
                 return Conflict($"A product with the name '{productDto.Name}' already exists.");
@@ -136,10 +134,10 @@ namespace AccountManagement.Controllers
             // Map other fields
             _mapper.Map(productDto, product);
 
-            // Handle image file replacement
+            
             if (productDto.ImagePath != null)
             {
-                // Delete old image if exists
+                // Fshin imazzhin e vjeter nese ekziston
                 if (!string.IsNullOrEmpty(product.ImagePath))
                 {
                     var oldPath = Path.Combine(_env.WebRootPath, product.ImagePath);
@@ -147,7 +145,7 @@ namespace AccountManagement.Controllers
                         System.IO.File.Delete(oldPath);
                 }
 
-                // Save new image
+                // Ben save imazhin e ri 
                 string folderPath = Path.Combine(_env.WebRootPath, "images");
                 Directory.CreateDirectory(folderPath);
 
