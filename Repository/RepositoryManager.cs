@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using System.Threading.Tasks;
 
 namespace Repository
 {
@@ -7,6 +8,7 @@ namespace Repository
     {
         private RepositoryContext _repositoryContext;
         private ITestRepository _testRepository;
+        private IClientRepository _clientRepository;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -22,6 +24,22 @@ namespace Repository
 
                 return _testRepository;
             }
+        }
+
+        public IClientRepository ClientRepository
+        {
+            get
+            {
+                if (_clientRepository == null)
+                    _clientRepository = new ClientRepository(_repositoryContext);
+
+                return _clientRepository;
+            }
+        }
+
+        public async Task SaveAsync()
+        {
+            await _repositoryContext.SaveChangesAsync();
         }
     }
 }
