@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Entities.DTO;
-using Entities.Models;
+using Entities.DTO; 
+using Entities.Models; 
 
 namespace AccountManagement
 {
@@ -9,6 +9,7 @@ namespace AccountManagement
         public MappingProfile()
         {
             CreateMap<TestEntityDTO, TestEntity>();
+            CreateMap<ClientForCreationDto, Client>();
         }
     }
 }
