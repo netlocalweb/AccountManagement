@@ -9,6 +9,12 @@ namespace AccountManagement
         public MappingProfile()
         {
             CreateMap<TestEntityDTO, TestEntity>();
+
+            CreateMap<BankAccount, BankAccountDTO>();
+
+            CreateMap<CreateBankAccountDTO, BankAccount>();
+
+            CreateMap<UpdateBankAccountDTO, BankAccount>();
         }
     }
 }

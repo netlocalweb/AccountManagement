@@ -25,10 +25,30 @@ namespace Entities
             modelBuilder.Entity<Client>()
                 .HasIndex(c => c.Username)
                 .IsUnique();
+
+            modelBuilder.Entity<Currency>()
+                .HasIndex(c => c.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<Currency>()
+                .Property(c => c.ExchangeRate)
+                .HasColumnType("decimal(18,4)");
+
+            modelBuilder.Entity<BankAccount>()
+                .HasIndex(b => new { b.ClientId, b.Code })
+                .IsUnique();
+
+            modelBuilder.Entity<BankAccount>()
+                .Property(b => b.Balance)
+                .HasColumnType("decimal(18,2)");
         }
 
         public DbSet<TestEntity> Test { get; set; }
 
         public DbSet<Client> Clients { get; set; }
+
+        public DbSet<Currency> Currencies { get; set; }
+
+        public DbSet<BankAccount> BankAccounts { get; set; }
     }
 }

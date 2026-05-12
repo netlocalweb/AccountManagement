@@ -8,6 +8,10 @@ namespace Contracts
 
         IClientRepository ClientRepository { get; }
 
+        ICurrencyRepository CurrencyRepository { get; }
+
+        IBankAccountRepository BankAccountRepository { get; }
+
         Task SaveAsync();
     }
 }
