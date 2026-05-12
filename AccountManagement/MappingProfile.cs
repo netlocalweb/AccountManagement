@@ -10,6 +10,7 @@ namespace AccountManagement
         {
             CreateMap<TestEntityDTO, TestEntity>();
             CreateMap<ClientForCreationDto, Client>();
+            CreateMap<Client, ClientDto>();
         }
     }
 }

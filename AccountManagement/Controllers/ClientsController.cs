@@ -4,6 +4,8 @@ using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -59,6 +61,28 @@ namespace AccountManagement.Controllers
             await _repositoryContext.SaveChangesAsync();
 
             return Ok(new { client.Id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetClients()
+        {
+            var clients = await _repositoryContext.Clients
+                .AsNoTracking()
+                .Select(c => new ClientDto
+                {
+                    Id = c.Id,
+                    FirstName = c.FirstName,
+                    LastName = c.LastName,
+                    Email = c.Email,
+                    Birthdate = c.Birthdate,
+                    Phone = c.Phone,
+                    DateCreated = c.DateCreated,
+                    DateModified = c.DateModified,
+                    Username = c.Username
+                })
+                .ToListAsync();
+
+            return Ok(clients);
         }
 
         private static bool IsValidEmail(string email)
