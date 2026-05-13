@@ -41,6 +41,10 @@ namespace Entities
             modelBuilder.Entity<BankAccount>()
                 .Property(b => b.Balance)
                 .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<BankTransaction>()
+                .Property(t => t.Amount)
+                .HasColumnType("decimal(18,2)");
         }
 
         public DbSet<TestEntity> Test { get; set; }
@@ -50,5 +54,7 @@ namespace Entities
         public DbSet<Currency> Currencies { get; set; }
 
         public DbSet<BankAccount> BankAccounts { get; set; }
+
+        public DbSet<BankTransaction> BankTransactions { get; set; }
     }
 }

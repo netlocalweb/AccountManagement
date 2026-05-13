@@ -12,6 +12,8 @@ namespace Contracts
 
         IBankAccountRepository BankAccountRepository { get; }
 
+        IBankTransactionRepository BankTransactionRepository { get; }
+
         Task SaveAsync();
     }
 }

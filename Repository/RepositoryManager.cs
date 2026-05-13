@@ -7,10 +7,12 @@ namespace Repository
     public class RepositoryManager : IRepositoryManager
     {
         private RepositoryContext _repositoryContext;
+
         private ITestRepository _testRepository;
         private IClientRepository _clientRepository;
         private ICurrencyRepository _currencyRepository;
         private IBankAccountRepository _bankAccountRepository;
+        private IBankTransactionRepository _bankTransactionRepository;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -58,6 +60,17 @@ namespace Repository
                     _bankAccountRepository = new BankAccountRepository(_repositoryContext);
 
                 return _bankAccountRepository;
+            }
+        }
+
+        public IBankTransactionRepository BankTransactionRepository
+        {
+            get
+            {
+                if (_bankTransactionRepository == null)
+                    _bankTransactionRepository = new BankTransactionRepository(_repositoryContext);
+
+                return _bankTransactionRepository;
             }
         }
 
