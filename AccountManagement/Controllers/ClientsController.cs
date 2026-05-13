@@ -85,6 +85,46 @@ namespace AccountManagement.Controllers
             return Ok(clients);
         }
 
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateClient(int id, [FromBody] ClientForUpdateDto clientDto)
+        {
+            if (clientDto == null)
+                return BadRequest("Client data is null.");
+
+            if (!IsValidEmail(clientDto.Email))
+                return BadRequest("Email is invalid.");
+
+            if (!IsValidPassword(clientDto.Password))
+                return BadRequest("Password does not meet complexity requirements.");
+
+            var client = await _repositoryContext.Clients.FindAsync(id);
+            if (client == null)
+                return NotFound($"Client with id {id} not found.");
+
+            var exists = await _repositoryContext.Clients.AnyAsync(c =>
+                c.Id != id && (c.Email == clientDto.Email || c.Phone == clientDto.Phone || c.Username == clientDto.Username));
+
+            if (exists)
+                return Conflict("Email, phone, or username already exists.");
+
+            var salt = GenerateSalt();
+            var hashedPassword = HashPassword(clientDto.Password, salt);
+
+            client.FirstName = clientDto.FirstName;
+            client.LastName = clientDto.LastName;
+            client.Email = clientDto.Email;
+            client.Birthdate = clientDto.Birthdate;
+            client.Phone = clientDto.Phone;
+            client.Username = clientDto.Username;
+            client.Password = hashedPassword;
+            client.PasswordSalt = salt;
+            client.DateModified = DateTime.UtcNow;
+
+            await _repositoryContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
         private static bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
