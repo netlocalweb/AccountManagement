@@ -78,17 +78,21 @@ namespace AccountManagement.Controllers
             if (!bankAccount.IsActive)
                 return BadRequest("Bank account is not active.");
 
+            decimal updatedBalance;
+
             if (transactionDto.Action == 1)
             {
-                bankAccount.Balance += transactionDto.Amount;
+                updatedBalance = bankAccount.Balance + transactionDto.Amount;
             }
-            else if (transactionDto.Action == 2)
+            else
             {
-                if (bankAccount.Balance < transactionDto.Amount)
+                if (transactionDto.Amount > bankAccount.Balance)
                     return BadRequest("Insufficient balance.");
 
-                bankAccount.Balance -= transactionDto.Amount;
+                updatedBalance = bankAccount.Balance - transactionDto.Amount;
             }
+
+            bankAccount.Balance = updatedBalance;
 
             bankAccount.DateModified = DateTime.Now;
 
@@ -98,8 +102,8 @@ namespace AccountManagement.Controllers
             transaction.DateCreated = DateTime.Now;
             transaction.DateModified = null;
 
-            _repository.BankTransactionRepository.CreateBankTransaction(transaction);
             _repository.BankAccountRepository.UpdateBankAccount(bankAccount);
+            _repository.BankTransactionRepository.CreateBankTransaction(transaction);
 
             await _repository.SaveAsync();
 
