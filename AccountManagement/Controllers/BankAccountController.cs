@@ -61,6 +61,9 @@ namespace AccountManagement.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (bankAccountDto.Balance < 0)
+                return BadRequest("Balance cannot be negative.");
+
             var existingBankAccount = _repository.BankAccountRepository
                 .GetBankAccountByCodeAndClientId(bankAccountDto.Code, bankAccountDto.ClientId);
 
@@ -89,6 +92,9 @@ namespace AccountManagement.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (bankAccountDto.Balance < 0)
+                return BadRequest("Balance cannot be negative.");
 
             var bankAccount = _repository.BankAccountRepository.GetBankAccountById(id);
 
@@ -122,7 +128,10 @@ namespace AccountManagement.Controllers
             if (bankAccount == null)
                 return NotFound("Bank account not found.");
 
-            _repository.BankAccountRepository.DeleteBankAccount(bankAccount);
+            bankAccount.IsActive = false;
+            bankAccount.DateModified = DateTime.Now;
+
+            _repository.BankAccountRepository.UpdateBankAccount(bankAccount);
             await _repository.SaveAsync();
 
             return NoContent();
