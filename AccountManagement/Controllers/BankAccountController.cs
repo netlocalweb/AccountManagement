@@ -94,9 +94,6 @@ namespace AccountManagement.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (bankAccountDto.Balance < 0)
-                return BadRequest("Balance cannot be negative.");
-
             var bankAccount = _repository.BankAccountRepository.GetBankAccountById(id);
 
             if (bankAccount == null)
@@ -111,7 +108,6 @@ namespace AccountManagement.Controllers
             bankAccount.Code = bankAccountDto.Code;
             bankAccount.Name = bankAccountDto.Name;
             bankAccount.CurrencyId = bankAccountDto.CurrencyId;
-            bankAccount.Balance = bankAccountDto.Balance;
             bankAccount.IsActive = bankAccountDto.IsActive;
             bankAccount.DateModified = DateTime.Now;
 
