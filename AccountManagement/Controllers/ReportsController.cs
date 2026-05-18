@@ -2,7 +2,7 @@
 using Entities.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace AccountManagement.Controllers
 {
