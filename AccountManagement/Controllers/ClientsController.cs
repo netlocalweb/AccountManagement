@@ -125,6 +125,19 @@ namespace AccountManagement.Controllers
             return Ok();
         }
 
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteClient(int id)
+        {
+            var client = await _repositoryContext.Clients.FindAsync(id);
+            if (client == null)
+                return NotFound($"Client with id {id} not found.");
+
+            _repositoryContext.Clients.Remove(client);
+            await _repositoryContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         private static bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
