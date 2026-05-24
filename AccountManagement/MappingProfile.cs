@@ -11,6 +11,8 @@ namespace AccountManagement
             CreateMap<TestEntityDTO, TestEntity>();
             CreateMap<ClientForCreationDto, Client>();
             CreateMap<Client, ClientDto>();
+            CreateMap<CurrencyForCreationDto, Currency>();
+            CreateMap<Currency, CurrencyDto>();
         }
     }
 }

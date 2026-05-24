@@ -17,6 +17,7 @@ namespace Entities
 
         public DbSet<TestEntity> Test { get; set; }
         public DbSet<Client> Clients { get; set; }
+        public DbSet<Currency> Currencies { get; set; }
         
     }
 }
