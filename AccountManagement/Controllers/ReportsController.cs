@@ -1,11 +1,12 @@
 ﻿using Entities;
 using Entities.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 
 namespace AccountManagement.Controllers
 {
+    [Authorize]
     [Route("api/reports")]
     [ApiController]
     public class ReportsController : ControllerBase
@@ -25,6 +26,7 @@ namespace AccountManagement.Controllers
                              on account.ClientId equals client.Id
                          join currency in _context.Currencies
                              on account.CurrencyId equals currency.Id
+                         where account.IsActive == true
                          select new AccountReportDTO
                          {
                              ClientCode = client.Username,
@@ -42,13 +44,13 @@ namespace AccountManagement.Controllers
         public IActionResult GetTransactionsByAccount(int accountId)
         {
             var account = _context.BankAccounts
-                .FirstOrDefault(a => a.Id == accountId);
+                .FirstOrDefault(a => a.Id == accountId && a.IsActive == true);
 
             if (account == null)
                 return NotFound("Bank account not found.");
 
             var transactions = _context.BankTransactions
-                .Where(t => t.BankAccountId == accountId)
+                .Where(t => t.BankAccountId == accountId && t.IsActive == true)
                 .OrderByDescending(t => t.DateCreated)
                 .Select(t => new AccountTransactionReportDTO
                 {
