@@ -13,6 +13,9 @@ namespace AccountManagement
             CreateMap<Client, ClientDto>();
             CreateMap<CurrencyForCreationDto, Currency>();
             CreateMap<Currency, CurrencyDto>();
+            CreateMap<BankAccountForCreationDto, BankAccount>();
+            CreateMap<BankAccountForUpdateDto, BankAccount>();
+            CreateMap<BankAccount, BankAccountDto>();
         }
     }
 }
