@@ -16,6 +16,9 @@ namespace AccountManagement
             CreateMap<BankAccountForCreationDto, BankAccount>();
             CreateMap<BankAccountForUpdateDto, BankAccount>();
             CreateMap<BankAccount, BankAccountDto>();
+            CreateMap<BankTransactionForCreationDto, BankTransaction>();
+            CreateMap<BankTransactionForUpdateDto, BankTransaction>();
+            CreateMap<BankTransaction, BankTransactionDto>();
         }
     }
 }

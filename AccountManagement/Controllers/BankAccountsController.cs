@@ -124,7 +124,8 @@ namespace AccountManagement.Controllers
             if (bankAccount == null)
                 return NotFound($"Bank account with id {id} not found.");
 
-            _repositoryContext.BankAccounts.Remove(bankAccount);
+            bankAccount.IsActive = false;
+            bankAccount.DateModified = DateTime.UtcNow;
             await _repositoryContext.SaveChangesAsync();
 
             return NoContent();

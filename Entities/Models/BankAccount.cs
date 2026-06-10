@@ -10,6 +10,7 @@ namespace Entities.Models
         public int CurrencyId { get; set; }
         public decimal Balance { get; set; }
         public int ClientId { get; set; }
+        public Currency Currency { get; set; }
         public bool IsActive { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateModified { get; set; }
