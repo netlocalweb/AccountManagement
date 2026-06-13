@@ -4,13 +4,9 @@ function UsersTodosPage() {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [todos, setTodos] = useState([]);
+    const [error, setError] = useState("");
     const [loadingUsers, setLoadingUsers] = useState(false);
     const [loadingTodos, setLoadingTodos] = useState(false);
-    const [error, setError] = useState("");
-
-    useEffect(() => {
-        loadUsers();
-    }, []);
 
     const loadUsers = async () => {
         try {
@@ -20,17 +16,25 @@ function UsersTodosPage() {
             const response = await fetch("https://jsonplaceholder.typicode.com/users");
 
             if (!response.ok) {
-                throw new Error("Gabim gjatë marrjes së users.");
+                throw new Error("Could not load users.");
             }
 
             const data = await response.json();
             setUsers(data);
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Could not load users.");
         } finally {
             setLoadingUsers(false);
         }
     };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            loadUsers();
+        }, 0);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleUserClick = async (user) => {
         try {
@@ -44,13 +48,13 @@ function UsersTodosPage() {
             );
 
             if (!response.ok) {
-                throw new Error("Gabim gjatë marrjes së todos.");
+                throw new Error("Could not load todos.");
             }
 
             const data = await response.json();
             setTodos(data);
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Could not load todos.");
         } finally {
             setLoadingTodos(false);
         }
@@ -58,23 +62,22 @@ function UsersTodosPage() {
 
     return (
         <div className="page-card">
-            <h2>Users / Todos Exercise</h2>
-            <p>
-                Kjo është pjesa e ushtrimit me React, fetch, promises dhe async/await.
-            </p>
+            <p className="top-label">API Practice</p>
+            <h2>Users / Todos</h2>
 
             {error && <p className="error-text">{error}</p>}
-            {loadingUsers && <p>Po ngarkohen users...</p>}
+
+            {loadingUsers && <p className="loading-text">Loading users...</p>}
 
             <div className="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Emri</th>
+                            <th>Name</th>
                             <th>Username</th>
                             <th>Email</th>
-                            <th>Qyteti</th>
+                            <th>City</th>
                         </tr>
                     </thead>
 
@@ -94,34 +97,30 @@ function UsersTodosPage() {
 
             {selectedUser && (
                 <div className="details-box">
-                    <h3>Detajet e user-it të klikuar</h3>
-                    <br />
+                    <h3>User Details</h3>
 
                     <p>
-                        <strong>Emri:</strong> {selectedUser.name}
+                        <strong>Name:</strong> {selectedUser.name}
                     </p>
-                    <p>
-                        <strong>Username:</strong> {selectedUser.username}
-                    </p>
+
                     <p>
                         <strong>Email:</strong> {selectedUser.email}
                     </p>
+
                     <p>
-                        <strong>Telefon:</strong> {selectedUser.phone}
+                        <strong>Phone:</strong> {selectedUser.phone}
                     </p>
+
                     <p>
-                        <strong>Website:</strong> {selectedUser.website}
-                    </p>
-                    <p>
-                        <strong>Kompania:</strong> {selectedUser.company.name}
+                        <strong>Company:</strong> {selectedUser.company.name}
                     </p>
 
                     <br />
 
-                    <h3>Todos të këtij user-i</h3>
+                    <h3>Todos</h3>
 
                     {loadingTodos ? (
-                        <p>Po ngarkohen todos...</p>
+                        <p className="loading-text">Loading todos...</p>
                     ) : (
                         <ul className="todo-list">
                             {todos.map((todo) => (
