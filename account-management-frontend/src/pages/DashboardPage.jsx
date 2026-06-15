@@ -102,25 +102,25 @@ function DashboardPage({ onNavigate }) {
 
             <section className="stats-grid">
                 <div className="stat-card">
-                    <div className="stat-icon">👥</div>
+                    <div className="stat-icon">CU</div>
                     <p>Total Customers</p>
                     <h3>{stats.customers}</h3>
                 </div>
 
                 <div className="stat-card">
-                    <div className="stat-icon">💳</div>
+                    <div className="stat-icon">BA</div>
                     <p>Bank Accounts</p>
                     <h3>{stats.accounts}</h3>
                 </div>
 
                 <div className="stat-card">
-                    <div className="stat-icon">🔁</div>
+                    <div className="stat-icon">TR</div>
                     <p>Transactions</p>
                     <h3>{stats.transactions}</h3>
                 </div>
 
                 <div className="stat-card">
-                    <div className="stat-icon">💰</div>
+                    <div className="stat-icon">BL</div>
                     <p>Total Balance</p>
                     <h3>{stats.totalBalance.toFixed(2)}</h3>
                 </div>

@@ -14,17 +14,17 @@ function App() {
     const [currentPage, setCurrentPage] = useState("dashboard");
 
     const mainMenu = [
-        { key: "dashboard", label: "Dashboard", icon: "🏦" },
-        { key: "clients", label: "Customers", icon: "👥" },
-        { key: "currencies", label: "Currencies", icon: "💱" },
-        { key: "accounts", label: "Bank Accounts", icon: "💳" },
-        { key: "transactions", label: "Transactions", icon: "🔁" },
-        { key: "reports", label: "Reports", icon: "📊" },
+        { key: "dashboard", label: "Dashboard", icon: "DB" },
+        { key: "clients", label: "Customers", icon: "CU" },
+        { key: "currencies", label: "Currencies", icon: "FX" },
+        { key: "accounts", label: "Bank Accounts", icon: "BA" },
+        { key: "transactions", label: "Transactions", icon: "TR" },
+        { key: "reports", label: "Reports", icon: "RP" },
     ];
 
     const bottomMenu = [
-        { key: "login", label: "Login", icon: "🔐" },
-        { key: "users-todos", label: "API Practice", icon: "🧪" },
+        { key: "login", label: "Login", icon: "LG" },
+        { key: "users-todos", label: "API Practice", icon: "API" },
     ];
 
     const allMenu = [...mainMenu, ...bottomMenu];

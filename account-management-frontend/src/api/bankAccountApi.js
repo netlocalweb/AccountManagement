@@ -4,6 +4,10 @@ export function getBankAccounts() {
     return apiRequest("/api/bankaccounts");
 }
 
+export function getBankAccountById(id) {
+    return apiRequest(`/api/bankaccounts/${id}`);
+}
+
 export function getBankAccountsByClient(clientId) {
     return apiRequest(`/api/bankaccounts/client/${clientId}`);
 }
